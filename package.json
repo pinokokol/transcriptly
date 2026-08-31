@@ -1,0 +1,16 @@
+{
+  "name": "transcriptly",
+  "version": "0.0.1",
+  "description": "Transcripts for any video URL - CLI, MCP, REST, WebMCP",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "transcriptly": "./cli.js"
+  }
+}
