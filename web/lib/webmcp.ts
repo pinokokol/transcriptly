@@ -97,7 +97,7 @@ export async function registerTranscriptlyTools(
       name: "get_transcript",
       title: "Get transcript",
       description:
-        "Transcribe a video or audio URL (YouTube, TikTok, Instagram, Facebook, X, Reddit, direct media links) and return the transcript. Formats: md, txt, json, srt. The transcript is also shown to the human on the page.",
+        "Transcribe a video or audio URL (YouTube, TikTok, Facebook, X, Reddit, direct media links) and return the transcript. Formats: md, txt, json, srt. The transcript is also shown to the human on the page.",
       inputSchema: {
         type: "object",
         properties: {

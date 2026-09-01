@@ -40,7 +40,7 @@ export const MCP_TOOLS: Tool[] = [
   {
     name: "get_transcript",
     description:
-      "Transcribe audio or video and return the transcript as Markdown, plain text, JSON, or SRT. Supports YouTube, TikTok, Instagram, Facebook, X, Reddit, and other platform URLs through yt-dlp, direct media URLs, and local file paths. ASR uses the user's configured local Whisper model; captions mode uses an available caption track.",
+      "Transcribe audio or video and return the transcript as Markdown, plain text, JSON, or SRT. Supports YouTube, TikTok, Facebook, X, Reddit, and other platform URLs through yt-dlp, direct media URLs, and local file paths. ASR uses the user's configured local Whisper model; captions mode uses an available caption track.",
     inputSchema: {
       type: "object",
       properties: {
@@ -75,7 +75,7 @@ export const MCP_TOOLS: Tool[] = [
   {
     name: "get_video_info",
     description:
-      "Inspect a source without transcribing or downloading media. Returns title, duration in seconds, platform, and available manual and automatic caption tracks. Supports YouTube, TikTok, Instagram, Facebook, X, Reddit, and other platform URLs through yt-dlp, direct media URLs, and local file paths. This is the cheap way to check duration and captions before committing to a transcription.",
+      "Inspect a source without transcribing or downloading media. Returns title, duration in seconds, platform, and available manual and automatic caption tracks. Supports YouTube, TikTok, Facebook, X, Reddit, and other platform URLs through yt-dlp, direct media URLs, and local file paths. This is the cheap way to check duration and captions before committing to a transcription.",
     inputSchema: {
       type: "object",
       properties: {

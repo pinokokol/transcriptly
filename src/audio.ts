@@ -36,6 +36,9 @@ export async function extractAudio(
       ...ytDlpProxyArgs(source.location),
       "--no-playlist",
       "--no-warnings",
+      // Audio-only stream when the platform offers one; far less to download.
+      "--format",
+      "bestaudio/best",
       "--extract-audio",
       "--audio-format",
       "wav",

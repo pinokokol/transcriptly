@@ -125,7 +125,7 @@ export default function Page() {
                 one clean transcript
               </h1>
               <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Paste a YouTube, TikTok, Instagram, Facebook, X or Reddit link, or drop a file. Open source, four ways in: a CLI, an MCP server, a REST API, and WebMCP tools
+                Paste a YouTube, TikTok, Facebook, X or Reddit link, or drop a file. Open source, four ways in: a CLI, an MCP server, a REST API, and WebMCP tools
                 that browser agents call right on this page.
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-4">

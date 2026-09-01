@@ -90,8 +90,8 @@ export default function DocsPage() {
               <a href="https://github.com/yt-dlp/yt-dlp" className={INLINE_LINK_CLASS_NAME}>
                 yt-dlp
               </a>
-              , direct media URLs, and local video or audio files. Verified: YouTube, TikTok, Instagram, Facebook, X, Reddit,
-              Twitch clips, SoundCloud, and Dailymotion. Vimeo requires a login and is not supported.
+              , direct media URLs, and local video or audio files. Verified: YouTube, TikTok, Facebook, X, Reddit, Twitch
+              clips, SoundCloud, and Dailymotion. Instagram and Vimeo need a login and are not supported.
             </p>
             <CodeBlock code={QUICK_START} className="mt-5" />
             <p className="mt-4 leading-relaxed text-muted-foreground">

@@ -12,7 +12,7 @@ const SURFACES = [
     art: "cli" as SurfaceKind,
     tagline: "One command, fully local.",
     snippet: "npm i -g transcriptly && transcriptly <url>",
-    note: "Whisper runs on your machine. YouTube, TikTok, Instagram, X, local files.",
+    note: "Whisper runs on your machine. YouTube, TikTok, Facebook, X, local files.",
   },
   {
     name: "MCP",

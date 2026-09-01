@@ -9,14 +9,14 @@
 const RED = "var(--play-red)";
 const ICE = "var(--ice)";
 
-type Glyph = "play" | "note" | "file" | "camera" | "x" | "f" | "bubble" | "reddit" | "bars";
+type Glyph = "play" | "note" | "file" | "d" | "x" | "f" | "bubble" | "reddit" | "bars";
 
 const SLOTS: ReadonlyArray<{ y: number; variants: ReadonlyArray<{ label: string; glyph: Glyph }> }> = [
   {
     y: 52,
     variants: [
       { label: "youtube.com/watch?v=…", glyph: "play" },
-      { label: "instagram.com/reel/…", glyph: "camera" },
+      { label: "dailymotion.com/video/…", glyph: "d" },
       { label: "facebook.com/watch/…", glyph: "f" },
       { label: "twitch.tv/…/clip/…", glyph: "bubble" },
     ],
@@ -68,13 +68,11 @@ function SourceGlyph({ glyph, y }: { glyph: Glyph; y: number }) {
           <path d={`M27 ${y - 7} v4 h4`} />
         </g>
       );
-    case "camera":
+    case "d":
       return (
-        <g {...line}>
-          <rect x="19" y={y - 6} width="12" height="12" rx="3.5" />
-          <circle cx="25" cy={y} r="2.75" />
-          <circle cx="28.6" cy={y - 3.6} r="0.9" fill="currentColor" stroke="none" />
-        </g>
+        <text x="25" y={y + 4.5} textAnchor="middle" fontSize="13" fontWeight="700" fill="currentColor" className="font-mono">
+          d
+        </text>
       );
     case "x":
       return <path d={`M20 ${y - 5} L30 ${y + 5} M30 ${y - 5} L20 ${y + 5}`} {...line} strokeWidth={1.75} />;
@@ -113,7 +111,7 @@ export function HeroArt() {
     <svg
       viewBox="0 0 380 240"
       role="img"
-      aria-label="YouTube, TikTok, Instagram, X, and file sources flowing into transcriptly and out as a timestamped transcript"
+      aria-label="YouTube, TikTok, Facebook, X, and file sources flowing into transcriptly and out as a timestamped transcript"
       className="surface-art h-auto w-full text-foreground"
     >
       {/* sources */}
