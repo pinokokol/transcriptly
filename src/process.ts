@@ -1,3 +1,4 @@
+import { spawn } from "node:child_process";
 import { constants, accessSync } from "node:fs";
 import { delimiter, isAbsolute, join } from "node:path";
 
@@ -53,17 +54,22 @@ export async function runCommand(
   cwd?: string,
 ): Promise<CommandResult> {
   const executable = resolveBinary(binary);
-  const processHandle = Bun.spawn([executable, ...args], {
+  const processHandle = spawn(executable, args, {
     cwd,
-    stdout: "pipe",
-    stderr: "pipe",
+    stdio: ["ignore", "pipe", "pipe"],
   });
 
-  const [stdout, stderr, exitCode] = await Promise.all([
-    new Response(processHandle.stdout).text(),
-    new Response(processHandle.stderr).text(),
-    processHandle.exited,
-  ]);
+  const stdoutChunks: Buffer[] = [];
+  const stderrChunks: Buffer[] = [];
+  processHandle.stdout.on("data", (chunk: Buffer) => stdoutChunks.push(chunk));
+  processHandle.stderr.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
+
+  const exitCode = await new Promise<number>((resolve, reject) => {
+    processHandle.once("error", reject);
+    processHandle.once("close", (code) => resolve(code ?? 1));
+  });
+  const stdout = Buffer.concat(stdoutChunks).toString("utf8");
+  const stderr = Buffer.concat(stderrChunks).toString("utf8");
 
   if (exitCode !== 0) {
     throw new CommandExecutionError(binary, exitCode, stderrExcerpt(stderr));

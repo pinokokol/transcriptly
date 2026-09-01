@@ -23,6 +23,10 @@ export interface TranscribeOptions {
   engine?: AsrEngineName;
 }
 
+export interface TranscribeHooks {
+  onSourceResolved?: () => void;
+}
+
 export interface TranscriptSegment {
   start: number;
   end: number;
@@ -63,9 +67,11 @@ function validateOptions(options: TranscribeOptions): void {
 export async function transcribe(
   source: string,
   options: TranscribeOptions = {},
+  hooks: TranscribeHooks = {},
 ): Promise<Transcript> {
   validateOptions(options);
   const resolved = await resolveSource(source);
+  hooks.onSourceResolved?.();
   const workingDirectory = await mkdtemp(join(tmpdir(), "transcriptly-"));
 
   try {

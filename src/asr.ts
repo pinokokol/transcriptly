@@ -152,7 +152,7 @@ export class GroqAsrEngine implements AsrEngine {
     }
 
     const form = new FormData();
-    const audio = Bun.file(audioPath);
+    const audio = new Blob([new Uint8Array(await readFile(audioPath))]);
     form.append("file", audio, basename(audioPath));
     form.append("model", GROQ_MODEL);
     form.append("response_format", "verbose_json");

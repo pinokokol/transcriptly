@@ -1,0 +1,38 @@
+# Snippet only: merge these entries into the existing top-level `services:` and
+# `volumes:` mappings in /opt/strutty/infra/docker-compose.prod.yml.
+# Also add this line under the existing caddy service's `volumes:`:
+#   - ./transcriptly-out:/srv/transcriptly:ro
+services:
+  transcriptly-api:
+    build:
+      context: /opt/transcriptly
+      dockerfile: server/Dockerfile
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    env_file:
+      - /etc/transcriptly/env
+    volumes:
+      - transcriptly-cache:/data/cache
+      - transcriptly-data:/data/data
+      - /etc/transcriptly:/etc/transcriptly:ro
+    environment:
+      CACHE_DIR: /data/cache
+      DATA_DIR: /data/data
+      TRUST_PROXY: "1"
+      ALLOWED_ORIGINS: https://transcriptly.dev
+    depends_on:
+      - bgutil-provider
+
+  bgutil-provider:
+    image: brainicism/bgutil-ytdlp-pot-provider:latest
+    restart: unless-stopped
+    expose:
+      - "4416"
+
+volumes:
+  transcriptly-cache:
+  transcriptly-data:

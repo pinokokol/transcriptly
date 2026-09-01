@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "transcriptly": {
+      "command": "npx",
+      "args": ["-y", "transcriptly", "mcp"]
+    }
+  }
+}
