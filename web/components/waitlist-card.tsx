@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import { Check, LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ApiError, joinWaitlist } from "@/lib/api";
@@ -9,7 +9,7 @@ export function WaitlistCard() {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "busy" | "done">("idle");
 
-  const submit = async (event: FormEvent) => {
+  const submit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (state !== "idle" || !email.trim()) return;
     setState("busy");

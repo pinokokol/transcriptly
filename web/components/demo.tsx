@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type DragEvent, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type DragEvent, type SubmitEvent } from "react";
 import { Check, FileAudio, LoaderCircle } from "lucide-react";
 import { PlayMark, Shell } from "@/components/shell";
 import type { ProgressStage } from "@/lib/api";
@@ -125,7 +125,7 @@ export function Demo({
   const fileInput = useRef<HTMLInputElement>(null);
 
   const submit = useCallback(
-    (event: FormEvent) => {
+    (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (url.trim() && !busy) onTranscribeUrl(url.trim());
     },
