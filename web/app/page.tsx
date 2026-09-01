@@ -22,6 +22,17 @@ import { registerTranscriptlyTools, type AgentActivity } from "@/lib/webmcp";
 
 const GITHUB_URL = "https://github.com/pinokokol/transcriptly";
 const INSTALL = "npm i -g transcriptly";
+/** Smooth scroll to the waitlist card, with an instant fallback for embedders that ignore smooth scrolling. */
+function scrollToWaitlist(): void {
+  const card = document.getElementById("waitlist");
+  if (!card) return;
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+  window.setTimeout(() => {
+    const { top, bottom } = card.getBoundingClientRect();
+    if (bottom < 0 || top > window.innerHeight) card.scrollIntoView({ block: "center" });
+  }, 700);
+}
+
 /** Limit errors (413 caps, 429 limits) get a shortcut to the waitlist card. */
 const LIMIT_STATUSES = new Set([413, 429]);
 
@@ -31,8 +42,7 @@ function reportError(error: unknown): void {
     toast.error(message, {
       action: {
         label: "Join the waitlist",
-        onClick: () =>
-          document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth", block: "center" }),
+        onClick: () => scrollToWaitlist(),
       },
     });
     return;
@@ -206,7 +216,6 @@ export default function Page() {
                 <TranscriptView
                   key={transcriptSource + String(agentFetched)}
                   transcript={transcript}
-                  source={transcriptSource}
                   agentFetched={agentFetched}
                 />
               )}

@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Bot, Check, Copy } from "lucide-react";
+import { Bot, Check, Copy, Download } from "lucide-react";
 import { toast } from "sonner";
 import { Shell } from "@/components/shell";
-import { fetchTranscriptAs, type TranscriptFormat, type TranscriptJson } from "@/lib/api";
+import type { TranscriptFormat, TranscriptJson } from "@/lib/api";
+import { downloadTranscript, formatTranscript } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 function timestamp(seconds: number): string {
@@ -25,32 +26,35 @@ const COPY_FORMATS: TranscriptFormat[] = ["md", "txt", "srt", "json"];
 
 export function TranscriptView({
   transcript,
-  source,
   agentFetched,
 }: {
   transcript: TranscriptJson;
-  source: string;
   agentFetched: boolean;
 }) {
   const [copied, setCopied] = useState<TranscriptFormat | null>(null);
-  const isUrl = /^https?:\/\//.test(source);
 
   const copyAs = useCallback(
     async (format: TranscriptFormat) => {
       try {
-        const text = isUrl
-          ? await fetchTranscriptAs(source, format)
-          : format === "json"
-            ? JSON.stringify(transcript, null, 2)
-            : transcript.text;
-        await navigator.clipboard.writeText(text);
+        await navigator.clipboard.writeText(formatTranscript(transcript, format));
         setCopied(format);
         setTimeout(() => setCopied(null), 1500);
       } catch {
         toast.error("Copy failed.");
       }
     },
-    [isUrl, source, transcript],
+    [transcript],
+  );
+
+  const downloadAs = useCallback(
+    (format: TranscriptFormat) => {
+      try {
+        downloadTranscript(transcript, format);
+      } catch {
+        toast.error("Download failed.");
+      }
+    },
+    [transcript],
   );
 
   return (
@@ -74,21 +78,35 @@ export function TranscriptView({
               )}
             </p>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             {COPY_FORMATS.map((format) => (
-              <button
+              <span
                 key={format}
-                type="button"
-                onClick={() => copyAs(format)}
-                className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 font-mono text-[11px] text-muted-foreground transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-foreground/30 hover:text-foreground active:scale-[0.97]"
+                className="inline-flex items-stretch overflow-hidden rounded-md border border-border bg-card font-mono text-[11px] text-muted-foreground transition-colors duration-300 hover:border-foreground/30"
               >
-                {copied === format ? (
-                  <Check className="size-3 text-primary" strokeWidth={2} />
-                ) : (
-                  <Copy className="size-3" strokeWidth={1.5} />
-                )}
-                {format}
-              </button>
+                <button
+                  type="button"
+                  onClick={() => copyAs(format)}
+                  aria-label={`Copy as ${format}`}
+                  className="inline-flex items-center gap-1 py-1 pr-2 pl-2.5 transition-colors hover:bg-foreground/5 hover:text-foreground active:scale-[0.97]"
+                >
+                  {copied === format ? (
+                    <Check className="size-3 text-primary" strokeWidth={2} />
+                  ) : (
+                    <Copy className="size-3" strokeWidth={1.5} />
+                  )}
+                  {format}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => downloadAs(format)}
+                  aria-label={`Download as ${format}`}
+                  title={`Download .${format}`}
+                  className="inline-flex items-center border-l border-border px-1.5 transition-colors hover:bg-foreground/5 hover:text-foreground active:scale-[0.97]"
+                >
+                  <Download className="size-3" strokeWidth={1.5} />
+                </button>
+              </span>
             ))}
           </div>
         </div>
