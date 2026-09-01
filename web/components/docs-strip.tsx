@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { Shell } from "@/components/shell";
@@ -38,6 +39,14 @@ export function DocsStrip() {
     <section className="border-t border-border py-20 sm:py-28">
       <div className="max-w-2xl">
         <h2 className="mt-4 text-3xl font-bold tracking-tighter sm:text-4xl">Use it wherever your work happens</h2>
+        <p className="mt-3 text-sm text-muted-foreground">
+          <Link
+            href="/docs"
+            className="underline decoration-foreground/20 underline-offset-4 transition-colors hover:text-foreground"
+          >
+            Read the full docs
+          </Link>
+        </p>
       </div>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
