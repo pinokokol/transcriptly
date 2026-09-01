@@ -1,5 +1,5 @@
 # Claude Code
 
 ```sh
-claude mcp add transcriptly -- npx -y transcriptly mcp
+claude mcp add --scope user transcriptly -- npx -y transcriptly mcp
 ```

@@ -73,8 +73,10 @@ Gives AI agents two tools: `get_transcript(source, format?, mode?)` and `get_vid
 Claude Code:
 
 ```sh
-claude mcp add transcriptly -- npx -y transcriptly mcp
+claude mcp add --scope user transcriptly -- npx -y transcriptly mcp
 ```
+
+`--scope user` makes it available in every project; leave it out to register it for the current folder only.
 
 Claude Desktop: add the snippet from [examples/claude-desktop.json](examples/claude-desktop.json) to your config. ChatGPT connects through a Secure MCP Tunnel, see [examples/chatgpt.md](examples/chatgpt.md).
 

@@ -78,3 +78,22 @@ describe("parseCliArgs", () => {
   });
 });
 
+
+describe("isMainModule", () => {
+  test("recognises the entry point through a symlink, as npm and npx invoke bins", async () => {
+    const { mkdtemp, symlink, writeFile: write } = await import("node:fs/promises");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const { pathToFileURL } = await import("node:url");
+    const { isMainModule } = await import("../src/cli");
+    const dir = await mkdtemp(join(tmpdir(), "transcriptly-main-"));
+    const real = join(dir, "cli.js");
+    const link = join(dir, "transcriptly");
+    await write(real, "");
+    await symlink(real, link);
+    expect(isMainModule(link, pathToFileURL(real).href)).toBe(true);
+    expect(isMainModule(real, pathToFileURL(real).href)).toBe(true);
+    expect(isMainModule(join(dir, "other.js"), pathToFileURL(real).href)).toBe(false);
+    expect(isMainModule(undefined, pathToFileURL(real).href)).toBe(false);
+  });
+});

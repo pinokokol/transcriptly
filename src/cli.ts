@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { realpathSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { basename } from "node:path";
@@ -326,7 +327,17 @@ export async function runCli(args = process.argv.slice(2)): Promise<number> {
   }
 }
 
-const isMain = process.argv[1]
-  ? fileURLToPath(import.meta.url) === process.argv[1]
-  : false;
-if (isMain) process.exitCode = await runCli();
+/**
+ * True when this file is the process entry point. npm and npx invoke the bin
+ * through a symlink, so both sides are resolved to real paths before comparing.
+ */
+export function isMainModule(entry: string | undefined, moduleUrl: string): boolean {
+  if (!entry) return false;
+  try {
+    return realpathSync(entry) === realpathSync(fileURLToPath(moduleUrl));
+  } catch {
+    return false;
+  }
+}
+
+if (isMainModule(process.argv[1], import.meta.url)) process.exitCode = await runCli();

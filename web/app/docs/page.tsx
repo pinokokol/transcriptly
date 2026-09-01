@@ -217,7 +217,11 @@ export default function DocsPage() {
             </p>
 
             <h3 className="mt-8 text-lg font-semibold tracking-tight">Claude Code</h3>
-            <CodeBlock code="claude mcp add transcriptly -- npx -y transcriptly mcp" className="mt-4" />
+            <CodeBlock code="claude mcp add --scope user transcriptly -- npx -y transcriptly mcp" className="mt-4" />
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              <code className={INLINE_CODE_CLASS_NAME}>--scope user</code> makes it available in every project. Leave it
+              out to register it for the current folder only.
+            </p>
 
             <h3 className="mt-8 text-lg font-semibold tracking-tight">Claude Desktop</h3>
             <p className="mt-3 leading-relaxed text-muted-foreground">
