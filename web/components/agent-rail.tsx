@@ -11,19 +11,12 @@ const TOOLS = [
 ];
 
 function StatusIcon({ status }: { status: AgentActivity["status"] }) {
-  if (status === "running")
-    return <LoaderCircle className="size-3.5 animate-spin text-primary" strokeWidth={1.5} />;
+  if (status === "running") return <LoaderCircle className="size-3.5 animate-spin text-primary" strokeWidth={1.5} />;
   if (status === "done") return <CircleCheck className="size-3.5 text-primary" strokeWidth={1.5} />;
   return <CircleX className="size-3.5 text-destructive" strokeWidth={1.5} />;
 }
 
-export function AgentRail({
-  webmcpCount,
-  activities,
-}: {
-  webmcpCount: number | null;
-  activities: AgentActivity[];
-}) {
+export function AgentRail({ webmcpCount, activities }: { webmcpCount: number | null; activities: AgentActivity[] }) {
   const live = (webmcpCount ?? 0) > 0;
 
   return (
@@ -31,7 +24,7 @@ export function AgentRail({
       <div className="flex items-center justify-between">
         <span className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight">
           <Bot className="size-4" strokeWidth={1.5} />
-          Agent surface
+          Agent panel
         </span>
         <span
           className={cn(
@@ -89,9 +82,7 @@ export function AgentRail({
             className="flex items-center gap-2 rounded-lg bg-card px-3 py-2 shadow-[0_1px_2px_rgba(10,12,15,0.04)] animate-fade-up dark:shadow-none"
           >
             <StatusIcon status={activity.status} />
-            <span className="font-mono text-[11px] font-semibold text-foreground">
-              {activity.tool}
-            </span>
+            <span className="font-mono text-[11px] font-semibold text-foreground">{activity.tool}</span>
             <span className="min-w-0 flex-1 truncate font-mono text-[10px] text-muted-foreground">
               {activity.detail}
             </span>
