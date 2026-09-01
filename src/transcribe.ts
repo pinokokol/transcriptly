@@ -24,7 +24,8 @@ export interface TranscribeOptions {
 }
 
 export interface TranscribeHooks {
-  onSourceResolved?: () => void;
+  onSourceResolved?: (metadata: TranscriptMetadata) => void;
+  onAudioReady?: () => void;
 }
 
 export interface TranscriptSegment {
@@ -71,17 +72,21 @@ export async function transcribe(
 ): Promise<Transcript> {
   validateOptions(options);
   const resolved = await resolveSource(source);
-  hooks.onSourceResolved?.();
+  hooks.onSourceResolved?.(resolved.metadata);
   const workingDirectory = await mkdtemp(join(tmpdir(), "transcriptly-"));
 
   try {
-    const rawSegments =
-      (options.mode ?? "asr") === "captions"
-        ? await downloadCaptions(resolved, workingDirectory, options.lang)
-        : await createAsrEngine(options.engine ?? "local").transcribe(
-            await extractAudio(resolved, workingDirectory),
-            { lang: options.lang, model: options.model },
-          );
+    let rawSegments;
+    if ((options.mode ?? "asr") === "captions") {
+      rawSegments = await downloadCaptions(resolved, workingDirectory, options.lang);
+    } else {
+      const audioPath = await extractAudio(resolved, workingDirectory);
+      hooks.onAudioReady?.();
+      rawSegments = await createAsrEngine(options.engine ?? "local").transcribe(audioPath, {
+        lang: options.lang,
+        model: options.model,
+      });
+    }
     const segments = normalizeSegments(rawSegments);
 
     return {

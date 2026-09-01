@@ -42,12 +42,36 @@ function bootFakeServer(
   });
   const config = { ...base, limits: { ...base.limits, ...limitOverrides } };
   const context = createContext(config, {
-    transcribe: async () => FAKE_TRANSCRIPT,
+    transcribe: async (_source, _options, hooks) => {
+      hooks?.onAudioReady?.();
+      return FAKE_TRANSCRIPT;
+    },
     resolveSource: async (source: string) =>
       fakeResolved(source, source.includes("long") ? 7200 : 10),
   });
   const server = startServer(context);
   return { server, dir, base: `http://localhost:${server.port}` };
+}
+
+interface ParsedSseEvent {
+  event: string;
+  data: unknown;
+}
+
+function parseSse(text: string): ParsedSseEvent[] {
+  return text
+    .replaceAll("\r\n", "\n")
+    .split("\n\n")
+    .filter((frame) => frame && !frame.startsWith(":"))
+    .map((frame) => {
+      const lines = frame.split("\n");
+      const event = lines.find((line) => line.startsWith("event: "))?.slice(7) ?? "message";
+      const data = lines
+        .filter((line) => line.startsWith("data: "))
+        .map((line) => line.slice(6))
+        .join("\n");
+      return { event, data: JSON.parse(data) as unknown };
+    });
 }
 
 describe("API integration (fake pipeline)", () => {
@@ -65,7 +89,7 @@ describe("API integration (fake pipeline)", () => {
     const first = await fetch(`${base}/api/transcript?url=https://example.com/a`);
     expect(first.status).toBe(200);
     expect(first.headers.get("X-Transcriptly-Cache")).toBe("miss");
-    expect(first.headers.get("X-Transcriptly")).toContain("demo only");
+    expect(first.headers.get("X-Transcriptly")).toContain("free tier");
     expect(await first.text()).toContain("hello from the fake transcript");
 
     const cached = await fetch(`${base}/api/transcript?url=https://example.com/a`);
@@ -156,6 +180,100 @@ describe("API integration (fake pipeline)", () => {
     } finally {
       boot.server.stop(true);
       hookServer.stop(true);
+    }
+  });
+});
+
+describe("API integration (streaming progress)", () => {
+  test("GET streams resolving, downloading, transcribing, and result", async () => {
+    const boot = bootFakeServer();
+    try {
+      const response = await fetch(
+        `${boot.base}/api/transcript?url=${encodeURIComponent("https://example.com/stream")}&progress=1`,
+      );
+      const events = parseSse(await response.text());
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get("Content-Type")).toBe("text/event-stream; charset=utf-8");
+      expect(events).toEqual([
+        { event: "stage", data: { stage: "resolving" } },
+        {
+          event: "stage",
+          data: { stage: "downloading", title: "Fake", duration: 10 },
+        },
+        { event: "stage", data: { stage: "transcribing", duration: 10 } },
+        { event: "result", data: FAKE_TRANSCRIPT },
+      ]);
+    } finally {
+      boot.server.stop(true);
+    }
+  });
+
+  test("an identical GET streams cached, then result", async () => {
+    const boot = bootFakeServer();
+    const requestUrl = `${boot.base}/api/transcript?url=${encodeURIComponent("https://example.com/cached-stream")}&progress=1`;
+    try {
+      await (await fetch(requestUrl)).text();
+      const response = await fetch(requestUrl);
+      expect(parseSse(await response.text())).toEqual([
+        { event: "stage", data: { stage: "cached" } },
+        { event: "result", data: FAKE_TRANSCRIPT },
+      ]);
+    } finally {
+      boot.server.stop(true);
+    }
+  });
+
+  test("POST upload streams transcribing, then result", async () => {
+    const boot = bootFakeServer();
+    try {
+      const form = new FormData();
+      form.append("file", new File(["fake audio"], "clip.wav", { type: "audio/wav" }));
+      const response = await fetch(
+        `${boot.base}/api/transcript?progress=1&format=json`,
+        { method: "POST", body: form },
+      );
+      expect(parseSse(await response.text())).toEqual([
+        { event: "stage", data: { stage: "transcribing" } },
+        { event: "result", data: FAKE_TRANSCRIPT },
+      ]);
+    } finally {
+      boot.server.stop(true);
+    }
+  });
+
+  test("an overlong source streams one 413 error with the plain response message", async () => {
+    const boot = bootFakeServer();
+    const source = encodeURIComponent("https://example.com/long-stream");
+    try {
+      const plain = await fetch(`${boot.base}/api/transcript?url=${source}&format=json`);
+      const plainBody = (await plain.json()) as { error: string };
+      const streamed = await fetch(
+        `${boot.base}/api/transcript?url=${source}&progress=1&format=json`,
+      );
+      const errors = parseSse(await streamed.text()).filter((event) => event.event === "error");
+
+      expect(errors).toEqual([
+        { event: "error", data: { status: 413, error: plainBody.error } },
+      ]);
+    } finally {
+      boot.server.stop(true);
+    }
+  });
+
+  test("progress with srt returns a 400 JSON response", async () => {
+    const boot = bootFakeServer();
+    try {
+      const response = await fetch(
+        `${boot.base}/api/transcript?url=${encodeURIComponent("https://example.com/srt")}&progress=1&format=srt`,
+      );
+      expect(response.status).toBe(400);
+      expect(response.headers.get("Content-Type")).toBe("application/json; charset=utf-8");
+      expect((await response.json()) as { error: string }).toEqual({
+        error: "format must be md, txt, json, or srt.",
+      });
+    } finally {
+      boot.server.stop(true);
     }
   });
 });

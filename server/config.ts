@@ -1,10 +1,10 @@
 import type { ServerLimits } from "./env";
 
 /**
- * Demo policy, versioned in code on purpose: these are product decisions,
+ * Free tier policy, versioned in code on purpose: these are product decisions,
  * not deployment knobs. Change them here, in a commit.
  */
-export const DEMO_LIMITS: ServerLimits = {
+export const FREE_TIER_LIMITS: ServerLimits = {
   transcriptsPerHour: 5,
   transcriptsPerDay: 20,
   lookupsPerMinute: 60,

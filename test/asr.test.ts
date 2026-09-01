@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -7,10 +7,12 @@ import {
   GROQ_MODEL,
   GROQ_TRANSCRIPTIONS_URL,
   GroqAsrEngine,
+  compressForUpload,
   parseWhisperJson,
   resolveModelPath,
 } from "../src/asr";
 import { ConfigurationError, MissingModelError } from "../src/errors";
+import { runCommand } from "../src/process";
 
 describe("parseWhisperJson", () => {
   test("maps whisper.cpp millisecond offsets to seconds", () => {
@@ -45,7 +47,7 @@ describe("GroqAsrEngine", () => {
     }) as typeof fetch;
 
     try {
-      const segments = await new GroqAsrEngine(mockFetch, "test-key").transcribe(
+      const segments = await new GroqAsrEngine(mockFetch, "test-key", async (path) => path).transcribe(
         audioPath,
         { lang: "en", model: "ignored-for-groq" },
       );
@@ -90,4 +92,19 @@ test("resolveModelPath reports both the model and missing path", () => {
     expect((error as MissingModelError).model).toBe(missing);
     expect((error as MissingModelError).path).toBe(missing);
   }
+});
+
+describe("compressForUpload", () => {
+  const hasFfmpeg = Bun.which("ffmpeg") !== null;
+
+  test.skipIf(!hasFfmpeg)("re-encodes the WAV to a much smaller MP3 next to it", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "transcriptly-compress-test-"));
+    const wavPath = join(directory, "audio.wav");
+    // 20 seconds of silence at the pipeline's 16 kHz mono format: 640 KB of WAV.
+    await runCommand("ffmpeg", ["-y", "-loglevel", "error", "-f", "lavfi", "-i", "anullsrc=r=16000:cl=mono", "-t", "20", wavPath]);
+    const mp3Path = await compressForUpload(wavPath);
+    expect(mp3Path).toBe(join(directory, "audio.mp3"));
+    const [wav, mp3] = await Promise.all([stat(wavPath), stat(mp3Path)]);
+    expect(mp3.size).toBeLessThan(wav.size / 3);
+  });
 });

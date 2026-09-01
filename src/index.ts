@@ -6,6 +6,7 @@ export {
   type TranscriptMetadata,
   type TranscriptSegment,
   type TranscriptSource,
+  type TranscribeHooks,
   type TranscribeOptions,
   type TranscriptionMode,
   type SourceKind,

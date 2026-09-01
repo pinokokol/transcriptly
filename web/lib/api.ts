@@ -17,6 +17,12 @@ export interface TranscriptJson {
   text: string;
 }
 
+export type ProgressStage = {
+  stage: "resolving" | "downloading" | "transcribing" | "cached";
+  title?: string;
+  duration?: number;
+};
+
 export interface VideoInfo {
   title: string | null;
   duration: number | null;
@@ -44,12 +50,75 @@ async function readError(response: Response): Promise<never> {
   throw new ApiError(response.status, message);
 }
 
+async function readTranscriptStream(
+  response: Response,
+  onStage: (stage: ProgressStage) => void,
+): Promise<TranscriptJson> {
+  const contentType = response.headers.get("Content-Type")?.toLowerCase() ?? "";
+  if (!contentType.startsWith("text/event-stream")) {
+    if (!response.ok) await readError(response);
+    return (await response.json()) as TranscriptJson;
+  }
+
+  if (!response.body) throw new ApiError(500, "The progress stream had no response body.");
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let result: TranscriptJson | undefined;
+
+  const readFrame = (frame: string): void => {
+    if (!frame || frame.startsWith(":")) return;
+    const lines = frame.split("\n");
+    const event = lines.find((line) => line.startsWith("event:"))?.slice(6).trim();
+    const dataText = lines
+      .filter((line) => line.startsWith("data:"))
+      .map((line) => line.slice(5).trimStart())
+      .join("\n");
+    if (!event || !dataText) return;
+
+    const data = JSON.parse(dataText) as unknown;
+    if (event === "stage") onStage(data as ProgressStage);
+    if (event === "result") result = data as TranscriptJson;
+    if (event === "error") {
+      const error = data as { status?: number; error?: string };
+      throw new ApiError(error.status ?? 500, error.error ?? "Transcription failed.");
+    }
+  };
+
+  while (true) {
+    const { done, value } = await reader.read();
+    buffer += decoder.decode(value, { stream: !done });
+    buffer = buffer.replaceAll("\r\n", "\n");
+    let boundary = buffer.indexOf("\n\n");
+    while (boundary !== -1) {
+      readFrame(buffer.slice(0, boundary));
+      buffer = buffer.slice(boundary + 2);
+      boundary = buffer.indexOf("\n\n");
+    }
+    if (done) break;
+  }
+  readFrame(buffer);
+
+  if (!result) throw new ApiError(500, "The progress stream ended before returning a transcript.");
+  return result;
+}
+
 export async function fetchTranscript(url: string): Promise<TranscriptJson> {
   const response = await fetch(
     `${API_BASE}/api/transcript?url=${encodeURIComponent(url)}&format=json`,
   );
   if (!response.ok) await readError(response);
   return (await response.json()) as TranscriptJson;
+}
+
+export async function streamTranscript(
+  url: string,
+  onStage: (stage: ProgressStage) => void,
+): Promise<TranscriptJson> {
+  const response = await fetch(
+    `${API_BASE}/api/transcript?url=${encodeURIComponent(url)}&progress=1&format=json`,
+  );
+  return readTranscriptStream(response, onStage);
 }
 
 export async function fetchTranscriptAs(url: string, format: TranscriptFormat): Promise<string> {
@@ -69,6 +138,19 @@ export async function uploadTranscript(file: File): Promise<TranscriptJson> {
   });
   if (!response.ok) await readError(response);
   return (await response.json()) as TranscriptJson;
+}
+
+export async function streamUpload(
+  file: File,
+  onStage: (stage: ProgressStage) => void,
+): Promise<TranscriptJson> {
+  const form = new FormData();
+  form.append("file", file);
+  const response = await fetch(`${API_BASE}/api/transcript?progress=1&format=json`, {
+    method: "POST",
+    body: form,
+  });
+  return readTranscriptStream(response, onStage);
 }
 
 export async function fetchInfo(url: string): Promise<VideoInfo> {

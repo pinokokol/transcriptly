@@ -23,16 +23,16 @@ export function WaitlistCard() {
   };
 
   return (
-    <section className="pb-20 sm:pb-28">
+    <section id="waitlist" className="scroll-mt-8 pb-20 sm:pb-28">
       <div className="offset-card rounded-2xl border border-border bg-card p-7 sm:p-10">
         <div className="grid items-center gap-8 lg:grid-cols-[1.2fr_1fr]">
           <div>
             <h2 className="mt-4 max-w-md text-2xl font-bold tracking-tighter sm:text-3xl">
-              5 transcriptions an hour, 30 minutes a video
+              Free tier: 5 transcriptions an hour, 30 minutes a video
             </h2>
             <p className="mt-3 max-w-[48ch] text-sm leading-relaxed text-muted-foreground">
-              The CLI has no limits and runs entirely on your machine. Want longer videos on hosted compute instead?
-              Leave your email and tell me it&apos;s worth building.
+              The CLI has no limits and runs entirely on your machine. Want longer videos and more volume on hosted
+              compute? Leave your email. With enough demand, a paid and generous tier gets built.
             </p>
           </div>
           {state === "done" ? (

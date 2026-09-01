@@ -245,9 +245,10 @@ export default function DocsPage() {
           </section>
 
           <section id="api" className="scroll-mt-8 border-t border-border pt-12">
-            <h2 className="text-2xl font-bold tracking-tight">Hosted demo API</h2>
+            <h2 className="text-2xl font-bold tracking-tight">Hosted API</h2>
             <p className="mt-4 leading-relaxed text-muted-foreground">
-              This API is for demo purposes only and is heavily rate limited. The base URL is{" "}
+              The hosted API is a free tier with tight limits, meant for trying things out and for the agent tools on
+              the landing page. The base URL is{" "}
               <code className={INLINE_CODE_CLASS_NAME}>https://transcriptly.dev</code>.
             </p>
             <Shell className="mt-5 min-w-0 max-w-full overflow-hidden">
@@ -324,9 +325,13 @@ export default function DocsPage() {
             <ApiExamples />
 
             <p className="mt-5 leading-relaxed text-muted-foreground">
-              <strong className="font-medium text-foreground">Demo limits:</strong> 5 transcripts per hour and 20 per
-              day per IP, a 30 minute video cap, a 25 MB upload cap, plus a shared daily budget. Run the CLI locally for
-              unlimited use.
+              <strong className="font-medium text-foreground">Free tier limits:</strong> 5 transcripts per hour and 20
+              per day per IP, a 30 minute video cap, a 25 MB upload cap, plus a shared daily budget. Run the CLI locally
+              for unlimited use, or{" "}
+              <Link href="/#waitlist" className={INLINE_LINK_CLASS_NAME}>
+                join the waitlist
+              </Link>
+              : with enough demand, a paid and generous tier gets built.
             </p>
 
             <h3 className="mt-8 text-lg font-semibold tracking-tight">Errors and rate limits</h3>
@@ -335,7 +340,7 @@ export default function DocsPage() {
               Rate limiting returns HTTP <code className={INLINE_CODE_CLASS_NAME}>429</code> with a{" "}
               <code className={INLINE_CODE_CLASS_NAME}>Retry-After</code> header in seconds. Successful transcript and
               source inspection responses carry the <code className={INLINE_CODE_CLASS_NAME}>X-Transcriptly</code>{" "}
-              header noting that the service is a demo. A transcript cache result is reported through the{" "}
+              header pointing at the free tier limits. A transcript cache result is reported through the{" "}
               <code className={INLINE_CODE_CLASS_NAME}>X-Transcriptly-Cache</code> header, with{" "}
               <code className={INLINE_CODE_CLASS_NAME}>hit</code> or{" "}
               <code className={INLINE_CODE_CLASS_NAME}>miss</code> as its value.
@@ -347,7 +352,7 @@ export default function DocsPage() {
             <p className="mt-4 leading-relaxed text-muted-foreground">
               The{" "}
               <Link href="/" className={INLINE_LINK_CLASS_NAME}>
-                demo page
+                landing page
               </Link>{" "}
               registers <code className={INLINE_CODE_CLASS_NAME}>get_transcript</code>,{" "}
               <code className={INLINE_CODE_CLASS_NAME}>get_video_info</code>, and{" "}

@@ -137,10 +137,40 @@ interface GroqResponse {
   segments?: unknown;
 }
 
+/**
+ * Groq caps uploads at 25 MB and raw 16 kHz WAV crosses that after ~13 minutes.
+ * Re-encode to 64 kbps mono MP3 (about 0.5 MB per minute) before uploading.
+ */
+export async function compressForUpload(audioPath: string): Promise<string> {
+  const target = `${audioPath.replace(/\.wav$/i, "")}.mp3`;
+  try {
+    await runCommand("ffmpeg", [
+      "-y",
+      "-loglevel",
+      "error",
+      "-i",
+      audioPath,
+      "-ac",
+      "1",
+      "-ar",
+      "16000",
+      "-codec:a",
+      "libmp3lame",
+      "-b:a",
+      "64k",
+      target,
+    ]);
+  } catch (error) {
+    throw new TranscriptionError("Could not compress audio for upload.", { cause: error });
+  }
+  return target;
+}
+
 export class GroqAsrEngine implements AsrEngine {
   constructor(
     private readonly fetchImplementation: typeof fetch = fetch,
     private readonly apiKey?: string,
+    private readonly prepareUpload: (audioPath: string) => Promise<string> = compressForUpload,
   ) {}
 
   async transcribe(audioPath: string, options: AsrOptions): Promise<TranscriptSegment[]> {
@@ -151,9 +181,10 @@ export class GroqAsrEngine implements AsrEngine {
       );
     }
 
+    const uploadPath = await this.prepareUpload(audioPath);
     const form = new FormData();
-    const audio = new Blob([new Uint8Array(await readFile(audioPath))]);
-    form.append("file", audio, basename(audioPath));
+    const audio = new Blob([new Uint8Array(await readFile(uploadPath))]);
+    form.append("file", audio, basename(uploadPath));
     form.append("model", GROQ_MODEL);
     form.append("response_format", "verbose_json");
     form.append("timestamp_granularities[]", "segment");

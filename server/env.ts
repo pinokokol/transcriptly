@@ -1,4 +1,4 @@
-import { DEMO_LIMITS } from "./config";
+import { FREE_TIER_LIMITS } from "./config";
 
 export interface ServerLimits {
   transcriptsPerHour: number;
@@ -43,6 +43,6 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     dataDir: env.DATA_DIR || "server/.data",
     trustProxy: env.TRUST_PROXY === "1",
     whisperModel: env.WHISPER_MODEL || undefined,
-    limits: DEMO_LIMITS,
+    limits: FREE_TIER_LIMITS,
   };
 }

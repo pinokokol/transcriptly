@@ -70,7 +70,11 @@ export function AgentRail({ webmcpCount, activities }: { webmcpCount: number | n
       <div className="mt-5 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.2em] text-foreground/60">
         <Radio className="size-3" strokeWidth={1.5} /> Activity
       </div>
-      <ul className="mt-2 min-h-16 flex-1 space-y-1.5 overflow-y-auto">
+      <ul
+        aria-live="polite"
+        aria-relevant="additions text"
+        className="mt-2 min-h-16 flex-1 space-y-1.5 overflow-y-auto"
+      >
         {activities.length === 0 && (
           <li className="rounded-lg border border-dashed border-foreground/15 px-3 py-3 text-center font-mono text-[11px] text-muted-foreground">
             No agent calls yet.

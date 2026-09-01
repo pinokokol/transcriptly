@@ -1,4 +1,4 @@
-# Transcriptly demo deployment
+# Transcriptly hosted API deployment
 
 1. Merge the `services:` entries and the two top-level named volumes from
    `compose.snippet.yml` into
@@ -58,7 +58,7 @@
 
 ## Pre-warming the sample cache
 
-The demo videos used in the README, docs, and demo video should answer
+The videos used in the README, docs, and the launch video should answer
 instantly even when a platform blocks the box. Generate their cache entries
 locally (residential IP, needs `GROQ_API_KEY` in `.env` plus yt-dlp and ffmpeg):
 

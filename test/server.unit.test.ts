@@ -5,7 +5,7 @@ import { join } from "node:path";
 
 import { UnsupportedUrlError } from "../src/index";
 import { TranscriptCache } from "../server/cache";
-import { DEMO_LIMITS } from "../server/config";
+import { FREE_TIER_LIMITS } from "../server/config";
 import { loadConfig } from "../server/env";
 import { DailyBudget, SlidingWindowLimiter } from "../server/limits";
 import { clientKeyFrom, corsHeaders, toHttpError } from "../server/respond";
@@ -113,11 +113,11 @@ describe("respond", () => {
 });
 
 describe("loadConfig", () => {
-  test("reads env for machine config and code for demo limits", () => {
+  test("reads env for machine config and code for free tier limits", () => {
     const config = loadConfig({ ASR_ENGINE: "local", PORT: "9000" });
     expect(config.asrEngine).toBe("local");
     expect(config.port).toBe(9000);
-    expect(config.limits).toEqual(DEMO_LIMITS);
+    expect(config.limits).toEqual(FREE_TIER_LIMITS);
     expect(loadConfig({}).asrEngine).toBe("groq");
   });
 

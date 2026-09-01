@@ -11,7 +11,7 @@ export interface LimitDecision {
   retryAfterSeconds: number;
 }
 
-/** In-memory sliding-window limiter; state is per-process by design (demo box). */
+/** In-memory sliding-window limiter; state is per-process by design (single box). */
 export class SlidingWindowLimiter {
   private readonly hits = new Map<string, number[]>();
 

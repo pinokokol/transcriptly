@@ -24,9 +24,9 @@ const SURFACES = [
   {
     name: "REST",
     art: "rest" as SurfaceKind,
-    tagline: "This site's demo API.",
+    tagline: "This site's hosted API.",
     snippet: "curl 'https://transcriptly.dev/api/transcript?url=…'",
-    note: "Demo only: 5/hour, 30-minute cap. Self-host it for real workloads.",
+    note: "Free tier: 5/hour, 30-minute cap. Self-host it, or join the waitlist for a paid tier.",
   },
   {
     name: "WebMCP",

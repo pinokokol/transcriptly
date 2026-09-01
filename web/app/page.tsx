@@ -11,11 +11,38 @@ import { PlayMark } from "@/components/shell";
 import { SiteHeader } from "@/components/site-header";
 import { TranscriptView } from "@/components/transcript-view";
 import { WaitlistCard } from "@/components/waitlist-card";
-import { ApiError, fetchTranscript, uploadTranscript, type TranscriptJson } from "@/lib/api";
+import {
+  ApiError,
+  streamTranscript,
+  streamUpload,
+  type ProgressStage,
+  type TranscriptJson,
+} from "@/lib/api";
 import { registerTranscriptlyTools, type AgentActivity } from "@/lib/webmcp";
 
 const GITHUB_URL = "https://github.com/pinokokol/transcriptly";
 const INSTALL = "npm i -g transcriptly";
+/** Limit errors (413 caps, 429 limits) get a shortcut to the waitlist card. */
+const LIMIT_STATUSES = new Set([413, 429]);
+
+function reportError(error: unknown): void {
+  const message = error instanceof ApiError ? error.message : "Transcription failed. Try again.";
+  if (error instanceof ApiError && LIMIT_STATUSES.has(error.status)) {
+    toast.error(message, {
+      action: {
+        label: "Join the waitlist",
+        onClick: () =>
+          document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth", block: "center" }),
+      },
+    });
+    return;
+  }
+  toast.error(message);
+}
+type PageProgress = (ProgressStage | { stage: "uploading"; title?: string; duration?: number }) & {
+  source: "url" | "upload";
+  startedAt: number;
+};
 
 function InstallChip() {
   const [copied, setCopied] = useState(false);
@@ -46,9 +73,9 @@ export default function Page() {
   const [agentFetched, setAgentFetched] = useState(false);
   const [activities, setActivities] = useState<AgentActivity[]>([]);
   const [webmcpCount, setWebmcpCount] = useState<number | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [busyLabel, setBusyLabel] = useState("");
+  const [progress, setProgress] = useState<PageProgress | null>(null);
   const droppedFile = useRef<File | null>(null);
+  const busy = progress !== null;
 
   const showTranscript = useCallback((result: TranscriptJson, source: string, byAgent: boolean) => {
     setTranscript(result);
@@ -61,6 +88,10 @@ export default function Page() {
     registerTranscriptlyTools(
       {
         onActivityStart: (activity) => setActivities((current) => [activity, ...current]),
+        onActivityUpdate: (id, detail) =>
+          setActivities((current) =>
+            current.map((entry) => (entry.id === id ? { ...entry, detail } : entry)),
+          ),
         onActivityEnd: (id, status, durationMs) =>
           setActivities((current) =>
             current.map((entry) => (entry.id === id ? { ...entry, status, durationMs } : entry)),
@@ -77,14 +108,23 @@ export default function Page() {
 
   const transcribeUrl = useCallback(
     async (url: string) => {
-      setBusy(true);
-      setBusyLabel("Fetching audio and transcribing - a first run takes a few seconds…");
+      setProgress({ stage: "resolving", source: "url", startedAt: Date.now() });
       try {
-        showTranscript(await fetchTranscript(url), url, false);
+        const result = await streamTranscript(url, (stage) =>
+          setProgress((current) => ({
+            ...stage,
+            source: "url",
+            title: stage.title ?? (current?.source === "url" ? current.title : undefined),
+            duration:
+              stage.duration ?? (current?.source === "url" ? current.duration : undefined),
+            startedAt: Date.now(),
+          })),
+        );
+        showTranscript(result, url, false);
       } catch (error) {
-        toast.error(error instanceof ApiError ? error.message : "Transcription failed. Try again.");
+        reportError(error);
       } finally {
-        setBusy(false);
+        setProgress(null);
       }
     },
     [showTranscript],
@@ -93,14 +133,28 @@ export default function Page() {
   const transcribeFile = useCallback(
     async (file: File) => {
       droppedFile.current = file;
-      setBusy(true);
-      setBusyLabel(`Uploading ${file.name} and transcribing…`);
+      setProgress({
+        stage: "uploading",
+        source: "upload",
+        title: file.name,
+        startedAt: Date.now(),
+      });
       try {
-        showTranscript(await uploadTranscript(file), file.name, false);
+        const result = await streamUpload(file, (stage) =>
+          setProgress((current) => ({
+            ...stage,
+            source: "upload",
+            title: stage.title ?? (current?.source === "upload" ? current.title : file.name),
+            duration:
+              stage.duration ?? (current?.source === "upload" ? current.duration : undefined),
+            startedAt: Date.now(),
+          })),
+        );
+        showTranscript(result, file.name, false);
       } catch (error) {
-        toast.error(error instanceof ApiError ? error.message : "Transcription failed. Try again.");
+        reportError(error);
       } finally {
-        setBusy(false);
+        setProgress(null);
       }
     },
     [showTranscript],
@@ -125,8 +179,8 @@ export default function Page() {
                 one clean transcript
               </h1>
               <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Paste a YouTube, TikTok, Facebook, X or Reddit link, or drop a file. Open source, four ways in: a CLI, an MCP server, a REST API, and WebMCP tools
-                that browser agents call right on this page.
+                Paste a YouTube, TikTok, Facebook, X or Reddit link, or drop a file. Open source, four ways in: a CLI,
+                an MCP server, a REST API, and WebMCP tools that browser agents call right on this page.
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-4">
                 <InstallChip />
@@ -143,7 +197,7 @@ export default function Page() {
               <div className="animate-fade-up [animation-delay:80ms]">
                 <Demo
                   busy={busy}
-                  busyLabel={busyLabel}
+                  progress={progress}
                   onTranscribeUrl={transcribeUrl}
                   onFileDropped={transcribeFile}
                 />

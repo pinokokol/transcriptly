@@ -9,8 +9,8 @@ import {
 } from "../src/index";
 import type { TranscriptFormat } from "../src/index";
 
-export const DEMO_HEADER =
-  "demo only - heavy limits; run it yourself: https://github.com/pinokokol/transcriptly";
+export const FREE_TIER_HEADER =
+  "free tier with limits; run it yourself: https://github.com/pinokokol/transcriptly or join the waitlist: https://transcriptly.dev/#waitlist";
 
 const CONTENT_TYPES: Record<TranscriptFormat, string> = {
   md: "text/markdown; charset=utf-8",
@@ -61,6 +61,53 @@ export function transcriptResponse(
   return new Response(text, {
     status: 200,
     headers: { "Content-Type": CONTENT_TYPES[format], ...headers },
+  });
+}
+
+export type SseEventName = "stage" | "result" | "error";
+
+export function sseResponse(
+  run: (emit: (event: SseEventName, data: unknown) => void) => Promise<void>,
+  headers: Record<string, string>,
+): Response {
+  const encoder = new TextEncoder();
+  let pingTimer: ReturnType<typeof setInterval> | undefined;
+  let open = true;
+
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      const enqueue = (text: string): void => {
+        if (open) controller.enqueue(encoder.encode(text));
+      };
+      const emit = (event: SseEventName, data: unknown): void => {
+        enqueue(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+      };
+
+      pingTimer = setInterval(() => enqueue(": ping\n\n"), 15_000);
+      void run(emit).finally(() => {
+        if (pingTimer) clearInterval(pingTimer);
+        pingTimer = undefined;
+        if (open) {
+          open = false;
+          controller.close();
+        }
+      });
+    },
+    cancel() {
+      open = false;
+      if (pingTimer) clearInterval(pingTimer);
+      pingTimer = undefined;
+    },
+  });
+
+  return new Response(stream, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache",
+      "X-Accel-Buffering": "no",
+      ...headers,
+    },
   });
 }
 

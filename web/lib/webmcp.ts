@@ -1,4 +1,11 @@
-import { fetchInfo, fetchTranscriptAs, uploadTranscript, type TranscriptJson } from "./api";
+import {
+  fetchInfo,
+  fetchTranscriptAs,
+  streamTranscript,
+  streamUpload,
+  type ProgressStage,
+  type TranscriptJson,
+} from "./api";
 
 // WebMCP draft: https://webmachinelearning.github.io/webmcp/
 interface ModelContextTool {
@@ -31,6 +38,7 @@ export interface AgentActivity {
 
 export interface WebMcpHooks {
   onActivityStart: (activity: AgentActivity) => void;
+  onActivityUpdate?: (id: number, detail: string) => void;
   onActivityEnd: (id: number, status: "done" | "error", durationMs: number) => void;
   /** The file a human dropped on the page, if any - agents cannot reach the disk themselves. */
   getDroppedFile: () => File | null;
@@ -68,19 +76,32 @@ async function tracked<T>(
   hooks: WebMcpHooks,
   tool: string,
   detail: string,
-  run: () => Promise<T>,
+  run: (id: number) => Promise<T>,
 ): Promise<T> {
   const id = nextActivityId++;
   const startedAt = Date.now();
   hooks.onActivityStart({ id, tool, detail, status: "running", startedAt });
   try {
-    const result = await run();
+    const result = await run(id);
     hooks.onActivityEnd(id, "done", Date.now() - startedAt);
     return result;
   } catch (error) {
     hooks.onActivityEnd(id, "error", Date.now() - startedAt);
     throw error;
   }
+}
+
+function formatDuration(seconds: number): string {
+  const wholeSeconds = Math.max(0, Math.round(seconds));
+  return `${Math.floor(wholeSeconds / 60)}:${String(wholeSeconds % 60).padStart(2, "0")}`;
+}
+
+function progressDetail(stage: ProgressStage): string {
+  if (stage.stage === "cached" || stage.stage === "resolving") return stage.stage;
+  const title = stage.title?.trim();
+  const duration = stage.duration === undefined ? undefined : formatDuration(stage.duration);
+  const context = [title, duration && (title ? `(${duration})` : duration)].filter(Boolean).join(" ");
+  return context ? `${stage.stage} · ${context}` : stage.stage;
 }
 
 /** Registers the page's three tools; resolves to the count (0 if WebMCP is absent). */
@@ -110,13 +131,14 @@ export async function registerTranscriptlyTools(
       execute: async (input) => {
         const url = String(input.url ?? "");
         const format = (input.format as "md" | "txt" | "json" | "srt") ?? "md";
-        return tracked(hooks, "get_transcript", url, async () => {
-          const [text, json] = await Promise.all([
-            fetchTranscriptAs(url, format),
-            fetchTranscriptAs(url, "json"),
-          ]);
-          hooks.showTranscript(JSON.parse(json) as TranscriptJson, url);
-          return text;
+        return tracked(hooks, "get_transcript", url, async (id) => {
+          const transcript = await streamTranscript(url, (stage) =>
+            hooks.onActivityUpdate?.(id, progressDetail(stage)),
+          );
+          hooks.showTranscript(transcript, url);
+          return format === "json"
+            ? JSON.stringify(transcript, null, 2)
+            : fetchTranscriptAs(url, format);
         });
       },
     },
@@ -156,8 +178,10 @@ export async function registerTranscriptlyTools(
         if (!file) {
           return "No file is loaded. Ask the human to drag an audio or video file onto the page, then call this tool again.";
         }
-        return tracked(hooks, "transcribe_file", file.name, async () => {
-          const transcript = await uploadTranscript(file);
+        return tracked(hooks, "transcribe_file", file.name, async (id) => {
+          const transcript = await streamUpload(file, (stage) =>
+            hooks.onActivityUpdate?.(id, progressDetail(stage)),
+          );
           hooks.showTranscript(transcript, file.name);
           return transcript.text;
         });

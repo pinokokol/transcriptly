@@ -19,6 +19,8 @@
     "node": ">=20"
   },
   "scripts": {
+    "dev:api": "bun --watch server/index.ts",
+    "dev:web": "bun run --cwd web dev",
     "build": "bun build ./src/index.ts ./src/cli.ts --outdir ./dist --target=node && tsc -p tsconfig.build.json",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
