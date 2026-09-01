@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { TranscriptionError } from "./errors";
 import { runCommand } from "./process";
 import type { ResolvedSource } from "./resolve";
+import { ytDlpProxyArgs } from "./ytdlp";
 
 export async function extractAudio(
   source: ResolvedSource,
@@ -32,6 +33,7 @@ export async function extractAudio(
     ]);
   } else {
     await runCommand("yt-dlp", [
+      ...ytDlpProxyArgs(source.location),
       "--no-playlist",
       "--no-warnings",
       "--extract-audio",

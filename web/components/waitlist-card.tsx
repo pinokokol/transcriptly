@@ -3,7 +3,6 @@
 import { useState, type FormEvent } from "react";
 import { Check, LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
-import { Eyebrow } from "@/components/shell";
 import { ApiError, joinWaitlist } from "@/lib/api";
 
 export function WaitlistCard() {
@@ -28,13 +27,12 @@ export function WaitlistCard() {
       <div className="offset-card rounded-2xl border border-border bg-card p-7 sm:p-10">
         <div className="grid items-center gap-8 lg:grid-cols-[1.2fr_1fr]">
           <div>
-            <Eyebrow>Demo limits</Eyebrow>
             <h2 className="mt-4 max-w-md text-2xl font-bold tracking-tighter sm:text-3xl">
               5 transcriptions an hour, 30 minutes a video
             </h2>
             <p className="mt-3 max-w-[48ch] text-sm leading-relaxed text-muted-foreground">
-              The CLI has no limits and runs entirely on your machine. Want longer videos on hosted
-              compute instead? Leave your email and tell me it&apos;s worth building.
+              The CLI has no limits and runs entirely on your machine. Want longer videos on hosted compute instead?
+              Leave your email and tell me it&apos;s worth building.
             </p>
           </div>
           {state === "done" ? (

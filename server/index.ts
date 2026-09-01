@@ -11,7 +11,7 @@ import {
   type ServerContext,
 } from "./handlers";
 import { DailyBudget, SlidingWindowLimiter } from "./limits";
-import { corsHeaders, jsonResponse } from "./respond";
+import { clientKeyFrom, corsHeaders, jsonResponse } from "./respond";
 
 const require = createRequire(import.meta.url);
 const { version: VERSION } = require("../package.json") as { version: string };
@@ -48,9 +48,8 @@ export function startServer(context: ServerContext) {
       const url = new URL(request.url);
       const origin = request.headers.get("Origin");
       const cors = corsHeaders(origin, config.allowedOrigins);
-      const forwarded = request.headers.get("X-Forwarded-For");
       const clientKey =
-        (config.trustProxy && forwarded?.split(",")[0]?.trim()) ||
+        clientKeyFrom(request.headers, config.trustProxy) ||
         server.requestIP(request)?.address ||
         "unknown";
 

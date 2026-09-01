@@ -8,7 +8,7 @@ import { TranscriptCache } from "../server/cache";
 import { DEMO_LIMITS } from "../server/config";
 import { loadConfig } from "../server/env";
 import { DailyBudget, SlidingWindowLimiter } from "../server/limits";
-import { corsHeaders, toHttpError } from "../server/respond";
+import { clientKeyFrom, corsHeaders, toHttpError } from "../server/respond";
 import { isValidEmail, recordSignup } from "../server/waitlist";
 
 describe("SlidingWindowLimiter", () => {
@@ -119,5 +119,19 @@ describe("loadConfig", () => {
     expect(config.port).toBe(9000);
     expect(config.limits).toEqual(DEMO_LIMITS);
     expect(loadConfig({}).asrEngine).toBe("groq");
+  });
+
+});
+
+describe("clientKeyFrom", () => {
+  test("ignores proxy headers unless trustProxy is on", () => {
+    const headers = new Headers({ "X-Forwarded-For": "1.2.3.4" });
+    expect(clientKeyFrom(headers, false)).toBeUndefined();
+  });
+
+  test("takes the first X-Forwarded-For entry when trusted", () => {
+    const headers = new Headers({ "X-Forwarded-For": "1.2.3.4, 10.0.0.1" });
+    expect(clientKeyFrom(headers, true)).toBe("1.2.3.4");
+    expect(clientKeyFrom(new Headers(), true)).toBeUndefined();
   });
 });

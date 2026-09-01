@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "transcriptly — transcripts for any video URL",
+  title: "transcriptly - transcripts for any video URL",
   description:
     "Paste a video URL or drop a file, get a clean transcript. Open source: CLI, MCP server, REST API, and WebMCP tools agents can call right on this page.",
 };

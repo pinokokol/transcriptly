@@ -23,14 +23,6 @@ export function Shell({
   );
 }
 
-export function Eyebrow({ children }: { children: ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-3 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-      {children}
-    </span>
-  );
-}
-
 /** The logo's red play triangle, used as a small brand mark. */
 export function PlayMark({ className }: { className?: string }) {
   return (

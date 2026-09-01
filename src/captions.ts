@@ -5,6 +5,7 @@ import { CaptionsUnavailableError, CommandExecutionError } from "./errors";
 import { runCommand } from "./process";
 import type { ResolvedSource } from "./resolve";
 import type { TranscriptSegment } from "./transcribe";
+import { ytDlpProxyArgs } from "./ytdlp";
 
 function parseTimestamp(value: string): number | undefined {
   const match = value.trim().match(/^(?:(\d+):)?(\d{2}):(\d{2})[.,](\d{3})$/);
@@ -170,6 +171,7 @@ export async function downloadCaptions(
 
   try {
     await runCommand("yt-dlp", [
+      ...ytDlpProxyArgs(source.location),
       "--skip-download",
       "--no-playlist",
       "--no-warnings",

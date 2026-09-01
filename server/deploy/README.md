@@ -24,16 +24,22 @@
    DISCORD_WEBHOOK_URL=replace-me
    ASR_ENGINE=groq
    PORT=8787
+   YOUTUBE_PROXY_URL=replace-me-or-remove
    ```
+
+   `YOUTUBE_PROXY_URL` (optional but recommended) routes YouTube-only yt-dlp
+   traffic through a residential proxy, since YouTube blocks Hetzner IPs.
 
    Optionally place a Netscape-format cookies file at
    `/etc/transcriptly/cookies.txt`; it is mounted read-only and automatically
    used by every `yt-dlp` invocation. Restrict it with
    `chmod 600 /etc/transcriptly/cookies.txt`.
 
-4. Create DNS-only records (disable proxying): an `A` record for
-   `transcriptly.dev` pointing to `46.225.59.22`, and a `CNAME` record for
-   `www` pointing to `transcriptly.dev`. Caddy will obtain the TLS certificates.
+4. At the registrar's DNS panel, create an `A` record for `transcriptly.dev`
+   (host `@`) pointing to `46.225.59.22`, and a `CNAME` record for `www`
+   pointing to `transcriptly.dev`. Caddy obtains the TLS certificates itself,
+   so if a proxying CDN (e.g. Cloudflare) is ever put in front, its records
+   must stay DNS-only.
 
 5. From this repository, run the first deployment:
 
@@ -48,3 +54,23 @@
    ```bash
    docker compose --env-file /etc/strutty/strutty.env -f docker-compose.prod.yml logs -f --tail=100 transcriptly-api bgutil-provider caddy
    ```
+
+## Pre-warming the sample cache
+
+The landing page's sample chips must work even when YouTube blocks the box.
+Generate their cache entries locally (residential IP, needs `GROQ_API_KEY` in
+`.env` plus yt-dlp and ffmpeg):
+
+```bash
+bun run server/deploy/prewarm.ts
+```
+
+Then ship them into the running container's cache volume:
+
+```bash
+rsync -avz server/deploy/prewarm-out/ root@46.225.59.22:/opt/transcriptly-prewarm/
+ssh root@46.225.59.22 "cd /opt/strutty/infra && docker compose --env-file /etc/strutty/strutty.env -f docker-compose.prod.yml cp /opt/transcriptly-prewarm/. transcriptly-api:/data/cache/"
+```
+
+Re-run both steps whenever the sample urls in `web/components/demo.tsx` change
+(the cache key hashes the raw source string).

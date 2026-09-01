@@ -8,6 +8,7 @@ import {
   UnsupportedUrlError,
 } from "./errors";
 import { runCommand } from "./process";
+import { ytDlpProxyArgs } from "./ytdlp";
 
 export type SourceKind = "platform-url" | "media-url" | "local-file";
 
@@ -95,6 +96,7 @@ async function resolveUrl(input: string, kind: SourceKind): Promise<ResolvedSour
   let stdout: string;
   try {
     ({ stdout } = await runCommand("yt-dlp", [
+      ...ytDlpProxyArgs(input),
       "--dump-single-json",
       "--no-playlist",
       "--no-warnings",

@@ -19,6 +19,16 @@ const CONTENT_TYPES: Record<TranscriptFormat, string> = {
   json: "application/json; charset=utf-8",
 };
 
+/**
+ * Client address for rate limiting. Undefined means use the socket address.
+ * Trusting X-Forwarded-For is safe behind Caddy 2.5+, which strips the
+ * header from untrusted clients before appending the real address.
+ */
+export function clientKeyFrom(headers: Headers, trustProxy: boolean): string | undefined {
+  if (!trustProxy) return undefined;
+  return headers.get("X-Forwarded-For")?.split(",")[0]?.trim() || undefined;
+}
+
 export function corsHeaders(
   origin: string | null,
   allowedOrigins: readonly string[],
