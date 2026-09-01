@@ -11,13 +11,7 @@ import { PlayMark } from "@/components/shell";
 import { SiteHeader } from "@/components/site-header";
 import { TranscriptView } from "@/components/transcript-view";
 import { WaitlistCard } from "@/components/waitlist-card";
-import {
-  ApiError,
-  streamTranscript,
-  streamUpload,
-  type ProgressStage,
-  type TranscriptJson,
-} from "@/lib/api";
+import { ApiError, streamTranscript, streamUpload, type ProgressStage, type TranscriptJson } from "@/lib/api";
 import { registerTranscriptlyTools, type AgentActivity } from "@/lib/webmcp";
 
 const GITHUB_URL = "https://github.com/pinokokol/transcriptly";
@@ -99,9 +93,7 @@ export default function Page() {
       {
         onActivityStart: (activity) => setActivities((current) => [activity, ...current]),
         onActivityUpdate: (id, detail) =>
-          setActivities((current) =>
-            current.map((entry) => (entry.id === id ? { ...entry, detail } : entry)),
-          ),
+          setActivities((current) => current.map((entry) => (entry.id === id ? { ...entry, detail } : entry))),
         onActivityEnd: (id, status, durationMs) =>
           setActivities((current) =>
             current.map((entry) => (entry.id === id ? { ...entry, status, durationMs } : entry)),
@@ -125,8 +117,7 @@ export default function Page() {
             ...stage,
             source: "url",
             title: stage.title ?? (current?.source === "url" ? current.title : undefined),
-            duration:
-              stage.duration ?? (current?.source === "url" ? current.duration : undefined),
+            duration: stage.duration ?? (current?.source === "url" ? current.duration : undefined),
             startedAt: Date.now(),
           })),
         );
@@ -155,8 +146,7 @@ export default function Page() {
             ...stage,
             source: "upload",
             title: stage.title ?? (current?.source === "upload" ? current.title : file.name),
-            duration:
-              stage.duration ?? (current?.source === "upload" ? current.duration : undefined),
+            duration: stage.duration ?? (current?.source === "upload" ? current.duration : undefined),
             startedAt: Date.now(),
           })),
         );
@@ -174,7 +164,7 @@ export default function Page() {
     <>
       <div className="flex items-center justify-center gap-2 bg-accent px-4 py-2 text-center text-xs font-medium text-accent-foreground">
         <PlayMark className="size-2" />
-        OpenAI WebMCP Challenge entry - the agent tools on this page are real. Watch the rail.
+        OpenAI WebMCP Challenge entry - the agent tools on this page are real.
       </div>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 sm:px-6">
@@ -205,12 +195,7 @@ export default function Page() {
           <div className="mt-14 grid items-start gap-5 lg:grid-cols-[1fr_21rem]">
             <div className="flex min-w-0 flex-col gap-5">
               <div className="animate-fade-up [animation-delay:80ms]">
-                <Demo
-                  busy={busy}
-                  progress={progress}
-                  onTranscribeUrl={transcribeUrl}
-                  onFileDropped={transcribeFile}
-                />
+                <Demo busy={busy} progress={progress} onTranscribeUrl={transcribeUrl} onFileDropped={transcribeFile} />
               </div>
               {transcript && (
                 <TranscriptView

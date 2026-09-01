@@ -58,8 +58,8 @@ export function TranscriptView({
   );
 
   return (
-    <Shell className="animate-fade-up">
-      <div className={cn("p-5 sm:p-6", agentFetched && "agent-sweep rounded-[inherit]")}>
+    <Shell className={cn("animate-fade-up", agentFetched && "offset-card")}>
+      <div className="p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <h2 className="truncate text-lg font-semibold tracking-tight">

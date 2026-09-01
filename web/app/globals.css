@@ -198,10 +198,6 @@ body {
   from { opacity: 0; transform: translateY(1rem); }
   to { opacity: 1; transform: translateY(0); }
 }
-@keyframes sweep {
-  from { background-position: -120% 0; }
-  to { background-position: 220% 0; }
-}
 @keyframes ping-soft {
   0% { transform: scale(1); opacity: 0.7; }
   100% { transform: scale(2.4); opacity: 0; }
@@ -209,16 +205,6 @@ body {
 
 .animate-fade-up {
   animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.agent-sweep {
-  background-image: linear-gradient(100deg, transparent 20%, rgba(189, 235, 255, 0.5) 50%, transparent 80%);
-  background-size: 200% 100%;
-  background-repeat: no-repeat;
-  animation: sweep 1.6s cubic-bezier(0.16, 1, 0.3, 1) 1;
-}
-.dark .agent-sweep {
-  /* Same sweep, dialled back so the transcript stays readable under it. */
-  background-image: linear-gradient(100deg, transparent 20%, rgba(189, 235, 255, 0.2) 50%, transparent 80%);
 }
 
 /* The logo's signature: a flat card sitting on an ice-blue offset copy.

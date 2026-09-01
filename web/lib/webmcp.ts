@@ -6,6 +6,7 @@ import {
   type ProgressStage,
   type TranscriptJson,
 } from "./api";
+import { formatTranscript } from "./format";
 
 // WebMCP draft: https://webmachinelearning.github.io/webmcp/
 interface ModelContextTool {
@@ -118,12 +119,18 @@ export async function registerTranscriptlyTools(
       name: "get_transcript",
       title: "Get transcript",
       description:
-        "Transcribe a video or audio URL (YouTube, TikTok, Facebook, X, Reddit, direct media links) and return the transcript. Formats: md, txt, json, srt. The transcript is also shown to the human on the page.",
+        "Transcribe a video or audio URL (YouTube, TikTok, Facebook, X, Reddit, direct media links) and return the full transcript as text in the requested format. To deliver a file, call this with the format you need (md, srt, txt, or json) and save the returned text with the matching extension; the page's copy and download buttons work for the human only, and repeat calls for the same URL are instant. The transcript is also shown to the human on the page.",
       inputSchema: {
         type: "object",
         properties: {
           url: { type: "string", description: "Video or audio URL." },
-          format: { type: "string", enum: ["md", "txt", "json", "srt"], default: "md" },
+          format: {
+            type: "string",
+            enum: ["md", "txt", "json", "srt"],
+            default: "md",
+            description:
+              "md: Markdown with timestamps (default). txt: plain text. srt: subtitle file. json: title, duration, and segments with start and end seconds.",
+          },
         },
         required: ["url"],
       },
@@ -170,10 +177,21 @@ export async function registerTranscriptlyTools(
       name: "transcribe_file",
       title: "Transcribe the dropped file",
       description:
-        "Transcribe the media file the human has dropped onto this page. Agents cannot access the user's disk - if no file is loaded, ask the human to drag one onto the page first.",
-      inputSchema: { type: "object", properties: {} },
+        "Transcribe the media file the human has dropped onto this page and return the full transcript as text in the requested format (md, txt, srt, or json; save it with the matching extension for a file). Agents cannot access the user's disk - if no file is loaded, ask the human to drag one onto the page first.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          format: {
+            type: "string",
+            enum: ["md", "txt", "json", "srt"],
+            default: "txt",
+            description: "md: Markdown with timestamps. txt: plain text (default). srt: subtitle file. json: full structure.",
+          },
+        },
+      },
       annotations: { readOnlyHint: true, untrustedContentHint: true },
-      execute: async () => {
+      execute: async (input) => {
+        const format = (input.format as "md" | "txt" | "json" | "srt") ?? "txt";
         const file = hooks.getDroppedFile();
         if (!file) {
           return "No file is loaded. Ask the human to drag an audio or video file onto the page, then call this tool again.";
@@ -183,7 +201,7 @@ export async function registerTranscriptlyTools(
             hooks.onActivityUpdate?.(id, progressDetail(stage)),
           );
           hooks.showTranscript(transcript, file.name);
-          return transcript.text;
+          return formatTranscript(transcript, format);
         });
       },
     },

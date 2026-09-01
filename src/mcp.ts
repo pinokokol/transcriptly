@@ -40,7 +40,7 @@ export const MCP_TOOLS: Tool[] = [
   {
     name: "get_transcript",
     description:
-      "Transcribe audio or video and return the transcript as Markdown, plain text, JSON, or SRT. Supports YouTube, TikTok, Facebook, X, Reddit, and other platform URLs through yt-dlp, direct media URLs, and local file paths. ASR uses the user's configured local Whisper model; captions mode uses an available caption track.",
+      "Transcribe audio or video and return the full transcript as text in the requested format (Markdown, plain text, JSON, or SRT); save the returned text with the matching extension to produce a file. Supports YouTube, TikTok, Facebook, X, Reddit, and other platform URLs through yt-dlp, direct media URLs, and local file paths. ASR uses the user's configured local Whisper model; captions mode uses an available caption track.",
     inputSchema: {
       type: "object",
       properties: {
