@@ -236,3 +236,241 @@ body {
   border-radius: inherit;
   z-index: -1;
 }
+
+/* Surface illustrations on the landing docs strip. CSS only: transform, opacity,
+   stroke-dashoffset, offset-distance. Placement lives in SVG attributes or a
+   parent <g>; the animated child moves relative to it. */
+.surface-art [class*="art-"] {
+  transform-box: fill-box;
+}
+
+/* CLI: type the command, breathe the waveform, print the transcript. */
+@keyframes art-cli-type {
+  0% { transform: scaleX(0); }
+  24%, 90% { transform: scaleX(1); }
+  100% { transform: scaleX(0); }
+}
+@keyframes art-cli-cursor {
+  0% { transform: translateX(-122px); }
+  24%, 90% { transform: translateX(0); }
+  100% { transform: translateX(-122px); }
+}
+@keyframes art-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes art-cli-line-1 {
+  0%, 30% { opacity: 0; transform: translateX(-6px); }
+  38%, 90% { opacity: 1; transform: none; }
+  100% { opacity: 0; }
+}
+@keyframes art-cli-line-2 {
+  0%, 38% { opacity: 0; transform: translateX(-6px); }
+  46%, 90% { opacity: 1; transform: none; }
+  100% { opacity: 0; }
+}
+@keyframes art-cli-line-3 {
+  0%, 46% { opacity: 0; transform: translateX(-6px); }
+  54%, 90% { opacity: 1; transform: none; }
+  100% { opacity: 0; }
+}
+@keyframes art-wave {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+.art-cli-cmd { transform-origin: left center; animation: art-cli-type 5.2s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+.art-cli-cursor { animation: art-cli-cursor 5.2s cubic-bezier(0.16, 1, 0.3, 1) infinite, art-blink 1s linear infinite; }
+.art-cli-line-1 { animation: art-cli-line-1 5.2s ease-out infinite; }
+.art-cli-line-2 { animation: art-cli-line-2 5.2s ease-out infinite; }
+.art-cli-line-3 { animation: art-cli-line-3 5.2s ease-out infinite; }
+.art-wave { transform-origin: center; animation: art-wave 1.1s ease-in-out infinite; }
+
+/* MCP: flowing link, a request dot out, a transcript dot back, arrival rings. */
+@keyframes art-dash {
+  to { stroke-dashoffset: -20; }
+}
+@keyframes art-travel {
+  0% { offset-distance: 0%; opacity: 0; }
+  8%, 92% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes art-travel-back {
+  0% { offset-distance: 100%; opacity: 0; }
+  8%, 92% { opacity: 1; }
+  100% { offset-distance: 0%; opacity: 0; }
+}
+@keyframes art-ear {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.7; }
+}
+@keyframes art-ring {
+  0% { transform: scale(0.7); opacity: 0.7; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+.art-ear { animation: art-ear 1.8s ease-in-out infinite; }
+.art-mcp-link { stroke-dasharray: 4 6; animation: art-dash 1.4s linear infinite; }
+.art-mcp-req,
+.art-mcp-res {
+  offset-path: path("M76 48 C120 48 140 26 160 26 S200 48 244 48");
+  offset-rotate: 0deg;
+  opacity: 0;
+}
+.art-mcp-req { animation: art-travel 2.6s ease-in-out infinite; }
+.art-mcp-res { animation: art-travel-back 2.6s ease-in-out infinite; animation-delay: 1.3s; }
+.art-mcp-ring { transform-origin: center; opacity: 0; animation: art-ring 1s ease-out infinite; }
+.art-mcp-ring-right { animation-duration: 2.6s; animation-delay: 2.45s; }
+.art-mcp-ring-left { animation-duration: 2.6s; animation-delay: 3.75s; }
+
+/* REST: packet out, LED blink, document back, status pop. */
+@keyframes art-rest-req {
+  0% { transform: translateX(0); opacity: 0; }
+  6% { opacity: 1; }
+  32% { transform: translateX(134px); opacity: 1; }
+  38%, 100% { transform: translateX(134px); opacity: 0; }
+}
+@keyframes art-rest-res {
+  0%, 48% { transform: translateX(0); opacity: 0; }
+  54% { opacity: 1; }
+  82% { transform: translateX(-134px); opacity: 1; }
+  88%, 100% { transform: translateX(-134px); opacity: 0; }
+}
+@keyframes art-rest-led {
+  0%, 30% { opacity: 0.3; }
+  36%, 46% { opacity: 1; }
+  52%, 100% { opacity: 0.3; }
+}
+@keyframes art-rest-status {
+  0%, 84% { opacity: 0; transform: translateY(4px); }
+  90%, 97% { opacity: 1; transform: none; }
+  100% { opacity: 0; }
+}
+.art-rest-req { animation: art-rest-req 4.6s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+.art-rest-res { animation: art-rest-res 4.6s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+.art-rest-led { animation: art-rest-led 4.6s linear infinite; }
+.art-rest-status { animation: art-rest-status 4.6s ease-out infinite; }
+
+/* WebMCP: the pointer clicks the tool card, the card lights up, the transcript writes. */
+@keyframes art-pointer {
+  0% { transform: translate(0, 0); }
+  34% { transform: translate(98px, -24px) scale(1); }
+  40% { transform: translate(98px, -24px) scale(0.8); }
+  46%, 80% { transform: translate(98px, -24px) scale(1); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes art-card-flash {
+  0%, 38% { stroke-opacity: 0; }
+  42%, 62% { stroke-opacity: 1; }
+  74%, 100% { stroke-opacity: 0; }
+}
+@keyframes art-ping {
+  0%, 40% { transform: scale(0.6); opacity: 0; }
+  44% { opacity: 0.6; }
+  72%, 100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes art-write-1 {
+  0%, 46% { transform: scaleX(0); }
+  58%, 88% { transform: scaleX(1); }
+  96%, 100% { transform: scaleX(0); }
+}
+@keyframes art-write-2 {
+  0%, 52% { transform: scaleX(0); }
+  64%, 88% { transform: scaleX(1); }
+  96%, 100% { transform: scaleX(0); }
+}
+@keyframes art-write-3 {
+  0%, 58% { transform: scaleX(0); }
+  70%, 88% { transform: scaleX(1); }
+  96%, 100% { transform: scaleX(0); }
+}
+.art-pointer { transform-origin: top left; animation: art-pointer 5.4s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+.art-card-flash { stroke-opacity: 0; animation: art-card-flash 5.4s ease-out infinite; }
+.art-ping { transform-origin: center; opacity: 0; animation: art-ping 5.4s ease-out infinite; }
+.art-ping-late { animation-delay: 0.35s; }
+.art-write-1 { transform-origin: left center; animation: art-write-1 5.4s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+.art-write-2 { transform-origin: left center; animation: art-write-2 5.4s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+.art-write-3 { transform-origin: left center; animation: art-write-3 5.4s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .surface-art [class*="art-"] {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .surface-art .art-mcp-ring,
+  .surface-art .art-ping,
+  .surface-art .art-card-flash,
+  .surface-art .art-rest-status {
+    opacity: 0;
+  }
+}
+
+/* Hero: each source lights up and sends a dot into the tile, the tile bumps,
+   a red dot carries the result out, and transcript rows write themselves. */
+@keyframes art-hero-source {
+  0%, 60%, 100% { stroke: currentColor; stroke-opacity: 0.25; }
+  8%, 30% { stroke: var(--play-red); stroke-opacity: 1; }
+}
+@keyframes art-hero-travel {
+  0% { offset-distance: 0%; opacity: 0; }
+  5% { opacity: 1; }
+  26% { offset-distance: 100%; opacity: 1; }
+  30%, 100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes art-hero-breathe {
+  0%, 30%, 100% { transform: scale(1); }
+  10% { transform: scale(1.06); }
+}
+@keyframes art-hero-out {
+  0% { offset-distance: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  45% { offset-distance: 100%; opacity: 1; }
+  55%, 100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes art-hero-write {
+  0%, 30% { transform: scaleX(0); }
+  40%, 90% { transform: scaleX(1); }
+  100% { transform: scaleX(0); }
+}
+@keyframes art-hero-fade {
+  0%, 30% { opacity: 0; }
+  40%, 90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.art-hero-source { animation: art-hero-source 4.8s ease-in-out infinite; }
+.art-hero-dot { offset-rotate: 0deg; opacity: 0; animation: art-hero-travel 4.8s ease-in-out infinite; }
+.art-hero-tile { transform-origin: center; animation: art-hero-breathe 1.6s ease-out infinite; animation-delay: 1.15s; }
+.art-hero-pulse { transform-origin: center; opacity: 0; animation: art-ring 1.6s ease-out infinite; animation-delay: 1.15s; }
+.art-hero-out { offset-path: path("M266 120 H288"); offset-rotate: 0deg; opacity: 0; animation: art-hero-out 1.6s ease-in-out infinite; animation-delay: 1.25s; }
+.art-hero-line { transform-origin: left center; animation: art-hero-write 4.8s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+.art-hero-row { animation: art-hero-fade 4.8s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .surface-art .art-hero-pulse,
+  .surface-art .art-hero-out {
+    opacity: 0;
+  }
+}
+
+/* Travelling dots: Chrome anchors SVG elements at their top-left corner on a
+   motion path, which left the dots sitting low and right of the line. */
+.art-mcp-req,
+.art-mcp-res,
+.art-hero-dot,
+.art-hero-out {
+  transform-origin: center;
+  offset-anchor: center;
+}
+
+/* Hero pills cycle through platforms: four variants, one visible per 4.8s cycle. */
+@keyframes art-hero-slot {
+  0% { opacity: 0; transform: translateY(4px); }
+  2.5%, 23% { opacity: 1; transform: translateY(0); }
+  25.5%, 100% { opacity: 0; transform: translateY(-4px); }
+}
+.art-hero-slot { opacity: 0; animation: art-hero-slot 19.2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .surface-art .art-hero-slot:not(:first-of-type) {
+    opacity: 0;
+  }
+}

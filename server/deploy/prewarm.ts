@@ -1,5 +1,5 @@
 /**
- * Pre-warm the demo cache for the sample chips on the landing page.
+ * Pre-warm the demo cache for the videos used in the README, docs, and demo video.
  *
  * Run this locally, from a residential IP (YouTube blocks the box):
  *   bun run server/deploy/prewarm.ts
@@ -12,7 +12,7 @@
 import { TranscriptCache } from "../cache";
 import { transcribe } from "../../src/index";
 
-/** Must match the SAMPLES urls in web/components/demo.tsx verbatim: the cache key hashes the raw source string. */
+/** Paste these exact strings on the demo page for an instant, cache-backed result: the cache key hashes the raw source string. */
 const SOURCES = [
   "https://www.youtube.com/watch?v=jNQXAC9IVRw",
   "https://www.tiktok.com/@tiktok/video/7231338487075638570",

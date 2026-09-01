@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ApiExamples } from "@/components/api-examples";
 import { CodeBlock } from "@/components/code-block";
 import { Shell } from "@/components/shell";
 import { SiteHeader } from "@/components/site-header";
@@ -61,7 +62,7 @@ export default function DocsPage() {
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 sm:px-6">
       <SiteHeader current="docs" />
 
-      <div className="min-w-0 max-w-3xl pt-12 pb-20 sm:pt-16 sm:pb-28">
+      <div className="min-w-0 max-w-6xl pt-12 pb-20 sm:pt-16 sm:pb-28">
         <header className="animate-fade-up">
           <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">Documentation</h1>
           <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -89,7 +90,8 @@ export default function DocsPage() {
               <a href="https://github.com/yt-dlp/yt-dlp" className={INLINE_LINK_CLASS_NAME}>
                 yt-dlp
               </a>
-              , direct media URLs, and local video or audio files.
+              , direct media URLs, and local video or audio files. Verified: YouTube, TikTok, Instagram, Facebook, X, Reddit,
+              Twitch clips, SoundCloud, and Dailymotion. Vimeo requires a login and is not supported.
             </p>
             <CodeBlock code={QUICK_START} className="mt-5" />
             <p className="mt-4 leading-relaxed text-muted-foreground">
@@ -108,7 +110,8 @@ export default function DocsPage() {
                 <code className={INLINE_CODE_CLASS_NAME}>ffmpeg</code> for audio extraction.
               </li>
               <li>
-                <code className={INLINE_CODE_CLASS_NAME}>yt-dlp</code> for URL sources. It is not needed for local files.
+                <code className={INLINE_CODE_CLASS_NAME}>yt-dlp</code> for URL sources. It is not needed for local
+                files.
               </li>
               <li>
                 <code className={INLINE_CODE_CLASS_NAME}>whisper-cli</code> for local transcription, install it with{" "}
@@ -183,8 +186,9 @@ export default function DocsPage() {
             <p className="mt-4 leading-relaxed text-muted-foreground">
               <code className={INLINE_CODE_CLASS_NAME}>--mode captions</code> skips speech recognition and uses platform
               captions when they exist. It is faster, but caption quality varies.{" "}
-              <code className={INLINE_CODE_CLASS_NAME}>--engine groq</code> sends audio to Groq&apos;s hosted Whisper instead
-              of running locally. Set <code className={INLINE_CODE_CLASS_NAME}>GROQ_API_KEY</code> in your environment.
+              <code className={INLINE_CODE_CLASS_NAME}>--engine groq</code> sends audio to Groq&apos;s hosted Whisper
+              instead of running locally. Set <code className={INLINE_CODE_CLASS_NAME}>GROQ_API_KEY</code> in your
+              environment.
             </p>
           </section>
 
@@ -196,8 +200,8 @@ export default function DocsPage() {
             <CodeBlock code={LIBRARY_EXAMPLE} className="mt-5" />
             <p className="mt-4 leading-relaxed text-muted-foreground">
               <code className={INLINE_CODE_CLASS_NAME}>transcribe(source, options)</code> accepts the CLI options{" "}
-              <code className={INLINE_CODE_CLASS_NAME}>mode</code>, <code className={INLINE_CODE_CLASS_NAME}>lang</code>,{" "}
-              <code className={INLINE_CODE_CLASS_NAME}>model</code>, and{" "}
+              <code className={INLINE_CODE_CLASS_NAME}>mode</code>, <code className={INLINE_CODE_CLASS_NAME}>lang</code>
+              , <code className={INLINE_CODE_CLASS_NAME}>model</code>, and{" "}
               <code className={INLINE_CODE_CLASS_NAME}>engine</code>. It returns segments with timestamps, metadata, and
               plain text. Errors are typed, including <code className={INLINE_CODE_CLASS_NAME}>MissingBinaryError</code>{" "}
               and <code className={INLINE_CODE_CLASS_NAME}>UnsupportedUrlError</code>.
@@ -248,7 +252,7 @@ export default function DocsPage() {
             </p>
             <Shell className="mt-5 min-w-0 max-w-full overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[52rem] border-collapse text-left">
+                <table className="w-full min-w-[44rem] border-collapse text-left">
                   <thead>
                     <tr className="border-b border-border">
                       <th scope="col" className="px-4 py-3 text-sm font-medium text-foreground">
@@ -269,13 +273,12 @@ export default function DocsPage() {
                     <tr className="border-b border-border">
                       <td className="px-4 py-3 text-sm font-medium text-foreground">GET</td>
                       <td className="px-4 py-3 text-sm">
-                        <code className={INLINE_CODE_CLASS_NAME}>
-                          {"/api/transcript?url=<url>&format=<format>"}
-                        </code>
+                        <code className={INLINE_CODE_CLASS_NAME}>{"/api/transcript?url=<url>&format=<format>"}</code>
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <code className={INLINE_CODE_CLASS_NAME}>url</code> is required. Format is{" "}
-                        <code className={INLINE_CODE_CLASS_NAME}>md</code>, <code className={INLINE_CODE_CLASS_NAME}>txt</code>,{" "}
+                        <code className={INLINE_CODE_CLASS_NAME}>md</code>,{" "}
+                        <code className={INLINE_CODE_CLASS_NAME}>txt</code>,{" "}
                         <code className={INLINE_CODE_CLASS_NAME}>json</code>, or{" "}
                         <code className={INLINE_CODE_CLASS_NAME}>srt</code>, default{" "}
                         <code className={INLINE_CODE_CLASS_NAME}>md</code>.
@@ -316,22 +319,41 @@ export default function DocsPage() {
                 </table>
               </div>
             </Shell>
+
+            <h3 className="mt-8 text-lg font-semibold tracking-tight">Examples</h3>
+            <ApiExamples />
+
             <p className="mt-5 leading-relaxed text-muted-foreground">
               <strong className="font-medium text-foreground">Demo limits:</strong> 5 transcripts per hour and 20 per
               day per IP, a 30 minute video cap, a 25 MB upload cap, plus a shared daily budget. Run the CLI locally for
               unlimited use.
+            </p>
+
+            <h3 className="mt-8 text-lg font-semibold tracking-tight">Errors and rate limits</h3>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              Error responses are JSON objects with an <code className={INLINE_CODE_CLASS_NAME}>error</code> string.
+              Rate limiting returns HTTP <code className={INLINE_CODE_CLASS_NAME}>429</code> with a{" "}
+              <code className={INLINE_CODE_CLASS_NAME}>Retry-After</code> header in seconds. Successful transcript and
+              source inspection responses carry the <code className={INLINE_CODE_CLASS_NAME}>X-Transcriptly</code>{" "}
+              header noting that the service is a demo. A transcript cache result is reported through the{" "}
+              <code className={INLINE_CODE_CLASS_NAME}>X-Transcriptly-Cache</code> header, with{" "}
+              <code className={INLINE_CODE_CLASS_NAME}>hit</code> or{" "}
+              <code className={INLINE_CODE_CLASS_NAME}>miss</code> as its value.
             </p>
           </section>
 
           <section id="webmcp" className="scroll-mt-8 border-t border-border pt-12">
             <h2 className="text-2xl font-bold tracking-tight">WebMCP</h2>
             <p className="mt-4 leading-relaxed text-muted-foreground">
-              The <Link href="/" className={INLINE_LINK_CLASS_NAME}>demo page</Link> registers{" "}
-              <code className={INLINE_CODE_CLASS_NAME}>get_transcript</code>,{" "}
+              The{" "}
+              <Link href="/" className={INLINE_LINK_CLASS_NAME}>
+                demo page
+              </Link>{" "}
+              registers <code className={INLINE_CODE_CLASS_NAME}>get_transcript</code>,{" "}
               <code className={INLINE_CODE_CLASS_NAME}>get_video_info</code>, and{" "}
               <code className={INLINE_CODE_CLASS_NAME}>transcribe_file</code> through{" "}
-              <code className={INLINE_CODE_CLASS_NAME}>document.modelContext</code>. Browser agents can transcribe videos
-              directly on the page, including a file the human drops into the drop zone. See the{" "}
+              <code className={INLINE_CODE_CLASS_NAME}>document.modelContext</code>. Browser agents can transcribe
+              videos directly on the page, including a file the human drops into the drop zone. See the{" "}
               <a
                 href="https://github.com/pinokokol/transcriptly/blob/main/web/lib/webmcp.ts"
                 className={INLINE_LINK_CLASS_NAME}

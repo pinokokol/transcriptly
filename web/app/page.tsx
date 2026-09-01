@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { AgentRail } from "@/components/agent-rail";
 import { Demo } from "@/components/demo";
 import { DocsStrip } from "@/components/docs-strip";
+import { HeroArt } from "@/components/hero-art";
 import { PlayMark } from "@/components/shell";
 import { SiteHeader } from "@/components/site-header";
 import { TranscriptView } from "@/components/transcript-view";
@@ -116,19 +117,24 @@ export default function Page() {
         <SiteHeader current="home" />
 
         <section className="pt-12 pb-16 sm:pt-16">
-          <div className="max-w-3xl animate-fade-up">
-            <h1 className="text-4xl font-bold tracking-tighter text-balance sm:text-6xl sm:leading-[1.05]">
-              Any video URL,
-              <br />
-              one clean transcript
-            </h1>
-            <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Paste a link or drop a file. Open source, four ways in: a CLI, an MCP server, a REST API, and WebMCP tools
-              that browser agents call right on this page.
-            </p>
-            <div className="mt-7 flex flex-wrap items-center gap-4">
-              <InstallChip />
-              <span className="font-mono text-xs text-muted-foreground">or just try it below - no install</span>
+          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_24rem]">
+            <div className="max-w-3xl animate-fade-up">
+              <h1 className="text-4xl font-bold tracking-tighter text-balance sm:text-6xl sm:leading-[1.05]">
+                Any video URL,
+                <br />
+                one clean transcript
+              </h1>
+              <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-muted-foreground sm:text-lg">
+                Paste a YouTube, TikTok, Instagram, Facebook, X or Reddit link, or drop a file. Open source, four ways in: a CLI, an MCP server, a REST API, and WebMCP tools
+                that browser agents call right on this page.
+              </p>
+              <div className="mt-7 flex flex-wrap items-center gap-4">
+                <InstallChip />
+                <span className="font-mono text-xs text-muted-foreground">or just try it below</span>
+              </div>
+            </div>
+            <div className="hidden animate-fade-up [animation-delay:120ms] lg:block">
+              <HeroArt />
             </div>
           </div>
 

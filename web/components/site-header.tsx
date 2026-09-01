@@ -5,6 +5,7 @@
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
+import { TextSearch } from "lucide-react";
 
 const GITHUB_URL = "https://github.com/pinokokol/transcriptly";
 const PILL_CLASS_NAME =
@@ -14,7 +15,7 @@ export function SiteHeader({ current }: { current?: "home" | "docs" }) {
   return (
     <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-3 py-6 animate-fade-up">
       <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2.5">
-        <img src="/logo.svg" alt="" className="size-7" />
+        <img src="/logo-bg.svg" alt="" className="size-9" />
         <span className="text-[15px] font-semibold tracking-tight">transcriptly</span>
       </Link>
       <span className="ml-auto flex shrink-0 items-center gap-2">
@@ -22,7 +23,8 @@ export function SiteHeader({ current }: { current?: "home" | "docs" }) {
           href="/docs"
           className={cn(PILL_CLASS_NAME, current === "docs" && "border-foreground/25 text-foreground")}
         >
-          Docs
+          <TextSearch className="size-4" strokeWidth={1.5} />
+          Documentation
         </Link>
         <a href={GITHUB_URL} className={PILL_CLASS_NAME}>
           <svg

@@ -4,28 +4,33 @@ import Link from "next/link";
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { Shell } from "@/components/shell";
+import { SurfaceArt, type SurfaceKind } from "@/components/surface-art";
 
 const SURFACES = [
   {
     name: "CLI",
+    art: "cli" as SurfaceKind,
     tagline: "One command, fully local.",
     snippet: "npm i -g transcriptly && transcriptly <url>",
-    note: "Whisper runs on your machine. YouTube, TikTok, local files.",
+    note: "Whisper runs on your machine. YouTube, TikTok, Instagram, X, local files.",
   },
   {
     name: "MCP",
+    art: "mcp" as SurfaceKind,
     tagline: "Give your agent ears.",
     snippet: "claude mcp add transcriptly -- npx -y transcriptly mcp",
     note: "get_transcript + get_video_info in Claude, ChatGPT, anywhere MCP works.",
   },
   {
     name: "REST",
+    art: "rest" as SurfaceKind,
     tagline: "This site's demo API.",
     snippet: "curl 'https://transcriptly.dev/api/transcript?url=…'",
     note: "Demo only: 5/hour, 30-minute cap. Self-host it for real workloads.",
   },
   {
     name: "WebMCP",
+    art: "webmcp" as SurfaceKind,
     tagline: "Tools on this very page.",
     snippet: "await document.modelContext.registerTool({…})",
     note: "Browser agents call get_transcript natively. Watch it in the rail above.",
@@ -56,6 +61,9 @@ export function DocsStrip() {
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <h3 className="font-mono text-sm font-bold text-primary">{surface.name}</h3>
                 <p className="text-sm text-muted-foreground">{surface.tagline}</p>
+              </div>
+              <div className="mt-5">
+                <SurfaceArt kind={surface.art} />
               </div>
               <button
                 type="button"

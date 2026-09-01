@@ -24,11 +24,12 @@
    DISCORD_WEBHOOK_URL=replace-me
    ASR_ENGINE=groq
    PORT=8787
-   YOUTUBE_PROXY_URL=replace-me-or-remove
+   YTDLP_PROXY_URL=replace-me-or-remove
    ```
 
-   `YOUTUBE_PROXY_URL` (optional but recommended) routes YouTube-only yt-dlp
-   traffic through a residential proxy, since YouTube blocks Hetzner IPs.
+   `YTDLP_PROXY_URL` (optional but recommended) routes yt-dlp traffic for YouTube,
+   Instagram, Facebook, X, and Reddit through a residential proxy, since those
+   platforms block or login-wall datacenter IPs.
 
    Optionally place a Netscape-format cookies file at
    `/etc/transcriptly/cookies.txt`; it is mounted read-only and automatically
@@ -57,9 +58,9 @@
 
 ## Pre-warming the sample cache
 
-The landing page's sample chips must work even when YouTube blocks the box.
-Generate their cache entries locally (residential IP, needs `GROQ_API_KEY` in
-`.env` plus yt-dlp and ffmpeg):
+The demo videos used in the README, docs, and demo video should answer
+instantly even when a platform blocks the box. Generate their cache entries
+locally (residential IP, needs `GROQ_API_KEY` in `.env` plus yt-dlp and ffmpeg):
 
 ```bash
 bun run server/deploy/prewarm.ts
@@ -72,5 +73,5 @@ rsync -avz server/deploy/prewarm-out/ root@46.225.59.22:/opt/transcriptly-prewar
 ssh root@46.225.59.22 "cd /opt/strutty/infra && docker compose --env-file /etc/strutty/strutty.env -f docker-compose.prod.yml cp /opt/transcriptly-prewarm/. transcriptly-api:/data/cache/"
 ```
 
-Re-run both steps whenever the sample urls in `web/components/demo.tsx` change
-(the cache key hashes the raw source string).
+Re-run both steps whenever the urls in `server/deploy/prewarm.ts` change (the
+cache key hashes the raw source string).

@@ -4,7 +4,7 @@ Any video URL or file in, one clean transcript out.
 
 Runs Whisper speech recognition on the audio, so it works on any video, not just ones with captions. One core, four ways to use it: a CLI, an MCP server for AI agents, a hosted demo API, and WebMCP tools on the [demo page](https://transcriptly.dev).
 
-Supports platform URLs (YouTube, TikTok, and everything else [yt-dlp](https://github.com/yt-dlp/yt-dlp) handles), direct media URLs, and local video or audio files.
+Supports platform URLs through [yt-dlp](https://github.com/yt-dlp/yt-dlp): YouTube, TikTok, Instagram, Facebook, X, Reddit, Twitch clips, SoundCloud, Dailymotion, and most other sites yt-dlp handles (Vimeo needs a login). Also direct media URLs and local video or audio files.
 
 ## Quick start
 
@@ -98,7 +98,7 @@ The [demo page](https://transcriptly.dev) registers WebMCP tools (`get_transcrip
 ## Honest notes
 
 - URL support rides on yt-dlp. Platforms change things and break it sometimes; `pipx upgrade yt-dlp` usually fixes it.
-- YouTube blocks datacenter IPs, so the hosted demo can be unreliable for YouTube links. Run the CLI locally for the real thing; it uses your residential IP and works fine.
+- YouTube, Instagram, Facebook, X, and Reddit block or login-wall datacenter IPs. The hosted demo routes them through a residential proxy, but the CLI on your own machine is the reliable path.
 - This is a side project, maintained casually. Issues and PRs welcome, response times honest.
 
 ## License
