@@ -11,10 +11,10 @@ Supports platform URLs through [yt-dlp](https://github.com/yt-dlp/yt-dlp): YouTu
 ```sh
 npm install -g transcriptly
 transcriptly setup
-transcriptly https://youtu.be/dQw4w9WgXcQ
+transcriptly "https://youtu.be/dQw4w9WgXcQ"
 ```
 
-`setup` checks your tools and lets you pick a Whisper model with arrow keys. Skip it if you like: the first transcription runs setup for you. One-off use without installing: `npx -y transcriptly <url>`.
+Quote URLs: `?` and `&` are special to zsh and bash. `setup` checks your tools and lets you pick a Whisper model with arrow keys. Skip it if you like: the first transcription runs setup for you. One-off use without installing: `npx -y transcriptly <url>`.
 
 ### Requirements
 

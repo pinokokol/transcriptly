@@ -12,7 +12,7 @@ const INLINE_CODE_CLASS_NAME = "font-mono text-[0.92em] text-foreground";
 
 const QUICK_START = `npm install -g transcriptly
 transcriptly setup
-transcriptly https://youtu.be/dQw4w9WgXcQ`;
+transcriptly "https://youtu.be/dQw4w9WgXcQ"`;
 
 const CLI_HELP = `Usage: transcriptly <url-or-file> [options]
        transcriptly setup
@@ -95,6 +95,8 @@ export default function DocsPage() {
             </p>
             <CodeBlock code={QUICK_START} className="mt-5" />
             <p className="mt-4 leading-relaxed text-muted-foreground">
+              Quote URLs: <code className={INLINE_CODE_CLASS_NAME}>?</code> and{" "}
+              <code className={INLINE_CODE_CLASS_NAME}>&amp;</code> are special to zsh and bash.{" "}
               <code className={INLINE_CODE_CLASS_NAME}>transcriptly setup</code> checks your tools and lets you choose a
               Whisper model with arrow keys. Skip it if you like: the first transcription runs setup for you. For
               one-off use without installing, run{" "}

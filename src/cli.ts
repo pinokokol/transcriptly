@@ -48,7 +48,7 @@ export const HELP_TEXT = `Usage: transcriptly <url-or-file> [options]
        transcriptly setup
        transcriptly mcp
 
-Transcribe video and audio from a URL or local file.
+Transcribe video and audio from a URL or local file. Quote URLs: ? and & are special to the shell.
 
 Options:
   -f, --format <md|txt|json|srt>  Output format (default: md)
