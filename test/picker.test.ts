@@ -1,9 +1,12 @@
 import { describe, expect, test } from "bun:test";
 
+import { EventEmitter } from "node:events";
+
 import {
   DEFAULT_MODEL_INDEX,
   MODEL_OPTIONS,
   moveSelection,
+  pickModel,
 } from "../src/cli/picker";
 
 describe("model picker", () => {
@@ -46,3 +49,37 @@ describe("model picker", () => {
   });
 });
 
+
+describe("pickModel", () => {
+  test("parks stdin again after a selection so the process can exit", async () => {
+    const calls: string[] = [];
+    const input = Object.assign(new EventEmitter(), {
+      isTTY: true,
+      isRaw: false,
+      readableFlowing: null as boolean | null,
+      isPaused: () => false,
+      setRawMode(raw: boolean) {
+        calls.push(`raw:${raw}`);
+        this.isRaw = raw;
+        return this;
+      },
+      resume() {
+        calls.push("resume");
+        this.readableFlowing = true;
+        return this;
+      },
+      pause() {
+        calls.push("pause");
+        this.readableFlowing = false;
+        return this;
+      },
+    }) as unknown as NodeJS.ReadStream;
+    const output = { write: () => true } as unknown as NodeJS.WriteStream;
+
+    const picked = pickModel(input, output, 0);
+    input.emit("keypress", "", { name: "down" });
+    input.emit("keypress", "", { name: "return" });
+    expect((await picked).name).toBe("large-v3-turbo");
+    expect(calls).toEqual(["raw:true", "resume", "raw:false", "pause"]);
+  });
+});

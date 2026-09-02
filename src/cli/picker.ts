@@ -61,7 +61,9 @@ export async function pickModel(
 
   emitKeypressEvents(input);
   const wasRaw = input.isRaw;
-  const wasPaused = input.isPaused();
+  // A fresh stdin is neither paused nor flowing; only leave it flowing if it already was,
+  // otherwise the open TTY handle keeps the process alive after the picker returns.
+  const wasFlowing = input.readableFlowing === true;
   let selectedIndex = initialIndex;
   let rendered = false;
 
@@ -82,7 +84,7 @@ export async function pickModel(
     const cleanup = (): void => {
       input.off("keypress", onKeypress);
       input.setRawMode(Boolean(wasRaw));
-      if (wasPaused) input.pause();
+      if (!wasFlowing) input.pause();
       output.write("\u001B[?25h");
     };
 

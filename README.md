@@ -14,7 +14,7 @@ transcriptly setup
 transcriptly https://youtu.be/dQw4w9WgXcQ
 ```
 
-`setup` checks your tools and lets you pick a Whisper model with arrow keys. One-off use without installing: `npx -y transcriptly <url>`.
+`setup` checks your tools and lets you pick a Whisper model with arrow keys. Skip it if you like: the first transcription runs setup for you. One-off use without installing: `npx -y transcriptly <url>`.
 
 ### Requirements
 

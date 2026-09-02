@@ -96,7 +96,8 @@ export default function DocsPage() {
             <CodeBlock code={QUICK_START} className="mt-5" />
             <p className="mt-4 leading-relaxed text-muted-foreground">
               <code className={INLINE_CODE_CLASS_NAME}>transcriptly setup</code> checks your tools and lets you choose a
-              Whisper model with arrow keys. For one-off use without installing, run{" "}
+              Whisper model with arrow keys. Skip it if you like: the first transcription runs setup for you. For
+              one-off use without installing, run{" "}
               <code className={INLINE_CODE_CLASS_NAME}>npx -y transcriptly &lt;url&gt;</code>.
             </p>
 

@@ -209,11 +209,13 @@ async function localModelFor(command: TranscribeCommand): Promise<string> {
     );
   }
 
-  process.stderr.write(`${MODEL_EXPLANATION}\n\n`);
-  const selected = await pickModel();
-  await downloadModel(selected.name);
-  await writeConfig({ model: selected.name }, path);
-  return selected.name;
+  // First run in a terminal: walk through setup, then carry on with the transcription.
+  process.stderr.write("No Whisper model is set up yet, running setup first.\n\n");
+  await runSetup();
+  const chosen = await configuredLocalModel(path);
+  if (!chosen) throw new CliError("Setup finished without a usable model. Run `transcriptly setup` again.");
+  process.stderr.write("\n");
+  return chosen;
 }
 
 async function runSetup(): Promise<void> {
