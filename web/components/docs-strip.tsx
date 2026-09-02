@@ -19,7 +19,7 @@ const SURFACES = [
     art: "mcp" as SurfaceKind,
     tagline: "Give your agent ears.",
     snippet: "claude mcp add --scope user transcriptly -- npx -y transcriptly mcp",
-    note: "get_transcript + get_video_info in Claude, ChatGPT, anywhere MCP works.",
+    note: "get_transcript + get_video_info in Claude, ChatGPT, anywhere MCP works. get_video_info checks length before a long transcription.",
   },
   {
     name: "REST",

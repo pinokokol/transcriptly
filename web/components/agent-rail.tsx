@@ -49,7 +49,7 @@ export function AgentRail({ webmcpCount, activities }: { webmcpCount: number | n
 
       <p className="mt-2 text-xs leading-relaxed text-foreground/70">
         {live
-          ? "This page registers WebMCP tools. A browser agent can call them natively - you watch it happen here."
+          ? "Agents get the same transcript you do, through the same page. A browser agent calls these tools natively; you watch it happen here."
           : webmcpCount === null
             ? "Checking for WebMCP…"
             : "Your browser has no WebMCP. Open this page in ChatGPT's browser, or enable chrome://flags/#enable-webmcp-testing."}

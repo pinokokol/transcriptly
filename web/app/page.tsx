@@ -179,8 +179,9 @@ export default function Page() {
                 one clean transcript
               </h1>
               <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Paste a YouTube, TikTok, Facebook, X or Reddit link, or drop a file. Open source, four ways in: a CLI,
-                an MCP server, a REST API, and WebMCP tools that browser agents call right on this page.
+                Whisper on the audio, not scraped captions: clean, timestamped transcripts as Markdown, SRT, or JSON.
+                Built for agents as much as people: an MCP server, WebMCP tools on this page, a REST API, and a CLI.
+                Paste a YouTube, TikTok, Facebook, X or Reddit link, or drop a file.
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-4">
                 <InstallChip />
